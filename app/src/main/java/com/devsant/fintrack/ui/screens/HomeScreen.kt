@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -67,48 +68,34 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Card(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(150.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("Income: ", style = MaterialTheme.typography.bodyLarge)
-                        Text("$1000.00", style = MaterialTheme.typography.headlineLarge, fontSize = 20.sp)
-                    }
-                }
-
-
-                Card(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(150.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("Expense: ", style = MaterialTheme.typography.bodyLarge)
-                        Text("$500.00", style = MaterialTheme.typography.headlineLarge, fontSize = 20.sp)
-                    }
-                }
+                StatCard("Income", "R$1000.00", modifier = Modifier.weight(1f))
+                StatCard("Expense", "R$500.00", modifier = Modifier.weight(1f))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
             Text("Recent Transactions", style = MaterialTheme.typography.headlineMedium)
+
+        }
+    }
+}
+
+@Composable
+fun StatCard(title: String, amount: String, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier
+            .height(150.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(amount, style = MaterialTheme.typography.headlineLarge, fontSize = 20.sp)
         }
     }
 }
