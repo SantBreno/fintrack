@@ -33,7 +33,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {}) {
+            FloatingActionButton(onClick = { navController.navigate("addTransaction") }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
             }
         }
