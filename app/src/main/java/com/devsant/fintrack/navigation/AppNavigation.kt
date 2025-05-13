@@ -18,7 +18,7 @@ fun AppNavigation(modifier : Modifier = Modifier) {
 
     NavHost(navController = navController, startDestination = "home", builder = {
         composable("home") {
-            HomeScreen(modifier, navController/*, transactionViewModel*/)
+            HomeScreen(modifier, navController, transactionViewModel)
         }
         composable("addTransactionScreen") {
             AddTransactionScreen(modifier, navController = navController)
