@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +25,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun AddTransaction(modifier : Modifier = Modifier, navController: NavHostController) {
+fun AddTransactionScreen(
+    modifier : Modifier = Modifier,
+    navController: NavHostController) {
+
+    var title by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
@@ -40,6 +43,7 @@ fun AddTransaction(modifier : Modifier = Modifier, navController: NavHostControl
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "Add Transaction", style = MaterialTheme.typography.headlineMedium)
+        OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Date") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = amount, onValueChange = { amount = it }, label = { Text("Amount") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text("Category") }, modifier = Modifier.fillMaxWidth())
@@ -52,17 +56,16 @@ fun AddTransaction(modifier : Modifier = Modifier, navController: NavHostControl
         ) {
             Row(
                 modifier = Modifier
+                    .height(70.dp)
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Button(onClick = { }) {
-                    Text("Add Transaction")
+                Button(onClick = { navController.navigate("home") }, modifier = Modifier.weight(1f)) {
+                    Text("AddTransaction")
                 }
-                Spacer(modifier = Modifier.height(100.dp))
-                Button(onClick = { navController.navigate("home") }) {
-                    Text("Back To DashBoard")
+                Button(onClick = { navController.navigate("home") }, modifier = Modifier.weight(1f)) {
+                    Text("Back to Home")
                 }
             }
 
@@ -74,5 +77,5 @@ fun AddTransaction(modifier : Modifier = Modifier, navController: NavHostControl
 @Composable
 fun AddTransactionScreenPreview() {
     val navController = rememberNavController()
-    AddTransaction(navController = navController)
+    AddTransactionScreen(navController = navController)
 }
