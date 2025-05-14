@@ -172,9 +172,9 @@ fun StatCard(title: String, amount: String, modifier: Modifier = Modifier) {
 @Composable
 fun HomeScreenContentPreview() {
     val sampleTransactions = listOf(
-        Transaction(id = 1, title = "Grocery", type = "Expense", amount = "1500"),
-        Transaction(id = 2, title = "Salary", type = "Income", amount = "25000"),
-        Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = "100")
+        Transaction(id = 1, title = "Grocery", type = "Expense", amount = "1500", category = "Food", date = "2023-09-15"),
+        Transaction(id = 2, title = "Salary", type = "Income", amount = "25000", category = "Salary", date = "2023-09-10"),
+        Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = "100", category = "Utilities", date = "2023-09-05")
     )
 
     HomeScreenContent(
