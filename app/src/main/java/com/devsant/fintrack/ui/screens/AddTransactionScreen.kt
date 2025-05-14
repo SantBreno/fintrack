@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,16 +82,8 @@ fun AddTransactionScreen(
             ) {
                 Button(
                     onClick = {
-                        viewModel.addTransaction(
-                            Transaction(
-                                id = 0,
-                                title = title,
-                                date = date,
-                                amount = amount,
-                                category = category,
-                                type = type
-                            )
-                        )
+                        viewModel.addTransaction()
+                        navController.navigate("home")
                     },
                     modifier = Modifier.weight(1f)) {
                     Text("AddTransaction")
