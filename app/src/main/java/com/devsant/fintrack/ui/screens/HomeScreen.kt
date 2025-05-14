@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -64,13 +68,13 @@ fun HomeScreenContent(
                     Text("FinTrack", color = Color.White, fontWeight = FontWeight.Bold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = Color(0xFF1B213F)
                 )
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddClick) {
-                Text("+")
+            FloatingActionButton(onClick = onAddClick, shape = CircleShape, containerColor = Color(0xFF1B213F)){
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add", tint = Color.White)
             }
         }
     ) { innerPadding ->
@@ -83,9 +87,10 @@ fun HomeScreenContent(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp),
-                shape = RoundedCornerShape(8.dp),
+                    .height(120.dp),
+                shape = RoundedCornerShape(25.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1B213F))
             ) {
                 Column(modifier = Modifier
                     .fillMaxSize()
@@ -93,8 +98,8 @@ fun HomeScreenContent(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Total Balance: ", style = MaterialTheme.typography.bodyLarge)
-                    Text("$1000.00", style = MaterialTheme.typography.headlineLarge)
+                    Text("Total Balance: ", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
+                    Text("$1000.00", style = MaterialTheme.typography.headlineLarge, color = Color.White)
                 }
             }
 
@@ -109,7 +114,10 @@ fun HomeScreenContent(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text("Recent Transactions", style = MaterialTheme.typography.headlineMedium)
+            Text("Recent Transactions",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                fontSize = 20.sp
+            )
 
             LazyColumn(
                 modifier = Modifier
@@ -131,19 +139,20 @@ fun HomeScreenContent(
 fun StatCard(title: String, amount: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
-            .height(150.dp),
-        shape = RoundedCornerShape(8.dp),
+            .height(80.dp),
+        shape = RoundedCornerShape(25.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1B213F))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
-            Text(amount, style = MaterialTheme.typography.headlineLarge, fontSize = 20.sp)
+            Text(title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
+            Text(amount, style = MaterialTheme.typography.headlineLarge, fontSize = 20.sp, color = Color.White)
         }
     }
 }
