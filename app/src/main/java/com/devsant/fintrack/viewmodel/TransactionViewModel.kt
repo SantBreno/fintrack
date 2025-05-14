@@ -24,6 +24,7 @@ open class TransactionViewModel : ViewModel() {
                 category = category.value,
                 type = type.value
             )
+            transactionList.add(transaction)
         }
     }
 

@@ -17,13 +17,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
@@ -32,13 +29,8 @@ import com.devsant.fintrack.viewmodel.TransactionViewModel
 fun AddTransactionScreen(
     modifier : Modifier = Modifier,
     navController: NavHostController,
-    viewModel: TransactionViewModel) {
-
-    var title by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
-    var type by remember { mutableStateOf("") }
+    viewModel: TransactionViewModel = viewModel()
+) {
 
     Scaffold(
         topBar = {
@@ -62,11 +54,26 @@ fun AddTransactionScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "Add Transaction", style = MaterialTheme.typography.headlineMedium)
-        OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Date") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = amount, onValueChange = { amount = it }, label = { Text("Amount") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text("Category") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = type, onValueChange = { type = it }, label = { Text("Type") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = viewModel.title.value,
+            onValueChange = { viewModel.title.value = it },
+            label = { Text("Title") },
+            modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = viewModel.date.value,
+            onValueChange = { viewModel.date.value = it },
+            label = { Text("Date") },
+            modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = viewModel.amount.value,
+            onValueChange = { viewModel.amount.value = it },
+            label = { Text("Amount") },
+            modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = viewModel.category.value,
+            onValueChange = { viewModel.category.value = it },
+            label = { Text("Category") },
+            modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = viewModel.type.value,
+            onValueChange = { viewModel.type.value = it },
+            label = { Text("Type") },
+            modifier = Modifier.fillMaxWidth())
 
         Box(
             modifier = Modifier
