@@ -6,13 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
@@ -25,17 +22,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +43,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 import java.util.Calendar
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +52,6 @@ fun AddTransactionScreen(
     navController: NavHostController,
     viewModel: TransactionViewModel = viewModel()
 ) {
-
 
     val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping","Other")
     val typeOptions = listOf("Expense", "Income")
@@ -89,11 +88,58 @@ fun AddTransactionScreen(
         OutlinedTextField(value = viewModel.title.value,
             onValueChange = { viewModel.title.value = it },
             label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = viewModel.date.value,
-            onValueChange = { viewModel.date.value = it },
-            label = { Text("Date") },
-            modifier = Modifier.fillMaxWidth())
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium
+        )
+
+
+
+        var showDatePicker by remember { mutableStateOf(false) }
+
+
+            OutlinedTextField(
+                value = viewModel.date.value,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Date") },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Date Picker"
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusProperties { canFocus = false }
+                    .clickable { showDatePicker = true },
+                enabled = false,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface
+                )
+            )
+
+
+
+        DatePickerButton(
+            showDialog = showDatePicker,
+            onDismiss = { showDatePicker = false },
+            onDateSelected = {
+                viewModel.date.value = it
+                showDatePicker = false
+            }
+        )
+
+
+
         OutlinedTextField(value = viewModel.amount.value,
             onValueChange = { viewModel.amount.value = it },
             label = { Text("Amount") },
@@ -110,7 +156,9 @@ fun AddTransactionScreen(
                 readOnly = true,
                 label = { Text("Category") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
-                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
+                modifier = Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth()
             )
             ExposedDropdownMenu(
                 expanded = categoryExpanded,
@@ -139,7 +187,9 @@ fun AddTransactionScreen(
                 readOnly = true,
                 label = { Text("Type") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
+                modifier = Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth()
             )
             ExposedDropdownMenu(
                 expanded = typeExpanded,
@@ -160,7 +210,7 @@ fun AddTransactionScreen(
         Box(
             modifier = Modifier
                 .padding(16.dp),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Row(
                 modifier = Modifier
@@ -185,6 +235,51 @@ fun AddTransactionScreen(
         }
     }
 }
+
+
+
+@Composable
+fun DatePickerButton(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onDateSelected: (String) -> Unit
+
+
+) {
+    val context = LocalContext.current
+
+    if (showDialog) {
+        DisposableEffect(Unit) {
+            val calendar = Calendar.getInstance()
+
+            val datePickerDialog = DatePickerDialog(
+                context,
+                { _, year, month, day ->
+                    val formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", day, month + 1, year)
+                    onDateSelected(formattedDate)
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
+
+            datePickerDialog.setOnDismissListener { onDismiss()
+            }
+
+            datePickerDialog.show()
+
+            onDispose {
+                datePickerDialog.setOnDismissListener(null)
+            }
+        }
+    }
+
+
+
+}
+
+
+
 
 @Preview(showBackground = true)
 @Composable
