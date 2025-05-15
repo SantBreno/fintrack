@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -36,15 +39,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.sin
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,11 +71,12 @@ fun AddTransactionScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("FinTrack", style = MaterialTheme.typography.titleLarge) },
+            TopAppBar(
+                title = {
+                    Text("FinTrack", color = Color.White, fontWeight = FontWeight.Bold)
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = Color(0xFF1B213F)
                 )
             )
         }
@@ -85,17 +93,23 @@ fun AddTransactionScreen(
     ) {
 
 
-        Text(text = "Add Transaction", style = MaterialTheme.typography.headlineMedium)
+        Text("Add Transaction",
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, color = Color(0xFF1B213F)),
+            fontSize = 40.sp
+        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(value = viewModel.title.value,
             onValueChange = { viewModel.title.value = it },
             label = { Text("Title") },
+            singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium
+            shape = MaterialTheme.shapes.medium,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF1B213F),
+                unfocusedBorderColor = Color(0xFF1B213F),
+            )
         )
-
-
-
 
 
         DateInputField(
@@ -118,6 +132,10 @@ fun AddTransactionScreen(
             onValueChange = { viewModel.amount.value = it },
             label = { Text("Amount") },
             shape = MaterialTheme.shapes.medium,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF1B213F),
+                unfocusedBorderColor = Color(0xFF1B213F),
+            ),
             modifier = Modifier.fillMaxWidth())
 
         ExposedDropdownMenuBox(
@@ -131,6 +149,10 @@ fun AddTransactionScreen(
                 readOnly = true,
                 label = { Text("Category") },
                 shape = MaterialTheme.shapes.medium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF1B213F),
+                    unfocusedBorderColor = Color(0xFF1B213F),
+                ),
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                 modifier = Modifier
                     .menuAnchor(MenuAnchorType.PrimaryNotEditable)
@@ -163,6 +185,10 @@ fun AddTransactionScreen(
                 readOnly = true,
                 label = { Text("Type") },
                 shape = MaterialTheme.shapes.medium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF1B213F),
+                    unfocusedBorderColor = Color(0xFF1B213F),
+                ),
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
                 modifier = Modifier
                     .menuAnchor(MenuAnchorType.PrimaryNotEditable)
@@ -201,11 +227,10 @@ fun AddTransactionScreen(
                         viewModel.addTransaction()
                         navController.navigate("home")
                     },
-                    modifier = Modifier.weight(1f)) {
-                    Text("AddTransaction")
-                }
-                Button(onClick = { navController.navigate("home") }, modifier = Modifier.weight(1f)) {
-                    Text("Back to Home")
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B213F))
+                ) {
+                    Text("Add Transaction")
                 }
             }
 
@@ -230,7 +255,8 @@ fun DateInputField(
         trailingIcon = {
             Icon(
                 imageVector = Icons.Default.DateRange,
-                contentDescription = "Date Picker"
+                contentDescription = "Date Picker",
+                tint = Color(0xFF1B213F)
             )
         },
         modifier = Modifier
@@ -244,9 +270,9 @@ fun DateInputField(
             },
         enabled = false,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-            disabledBorderColor = MaterialTheme.colorScheme.outline,
+            focusedBorderColor = Color(0xFF1B213F),
+            unfocusedBorderColor = Color(0xFF1B213F),
+            disabledBorderColor = Color(0xFF1B213F),
             focusedLabelColor = MaterialTheme.colorScheme.primary,
             unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
