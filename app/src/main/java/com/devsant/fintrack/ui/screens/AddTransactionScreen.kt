@@ -2,6 +2,7 @@ package com.devsant.fintrack.ui.screens
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +53,7 @@ fun AddTransactionScreen(
     navController: NavHostController,
     viewModel: TransactionViewModel = viewModel()
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
 
     val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping","Other")
     val typeOptions = listOf("Expense", "Income")
@@ -94,42 +96,15 @@ fun AddTransactionScreen(
 
 
 
-        var showDatePicker by remember { mutableStateOf(false) }
 
 
-            OutlinedTextField(
-                value = viewModel.date.value,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Date") },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Date Picker"
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusProperties { canFocus = false }
-                    .clickable { showDatePicker = true },
-                enabled = false,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    disabledBorderColor = MaterialTheme.colorScheme.outline,
-                    focusedLabelColor = MaterialTheme.colorScheme.primary,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    cursorColor = MaterialTheme.colorScheme.primary,
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledTextColor = MaterialTheme.colorScheme.onSurface
-                )
-            )
+        DateInputField(
+            value = viewModel.date.value,
+            onClick = { showDatePicker = true }
+        )
 
 
-
-        DatePickerButton(
+        DatePickerField(
             showDialog = showDatePicker,
             onDismiss = { showDatePicker = false },
             onDateSelected = {
@@ -139,10 +114,10 @@ fun AddTransactionScreen(
         )
 
 
-
         OutlinedTextField(value = viewModel.amount.value,
             onValueChange = { viewModel.amount.value = it },
             label = { Text("Amount") },
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth())
 
         ExposedDropdownMenuBox(
@@ -155,6 +130,7 @@ fun AddTransactionScreen(
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Category") },
+                shape = MaterialTheme.shapes.medium,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                 modifier = Modifier
                     .menuAnchor(MenuAnchorType.PrimaryNotEditable)
@@ -186,6 +162,7 @@ fun AddTransactionScreen(
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Type") },
+                shape = MaterialTheme.shapes.medium,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
                 modifier = Modifier
                     .menuAnchor(MenuAnchorType.PrimaryNotEditable)
@@ -236,10 +213,54 @@ fun AddTransactionScreen(
     }
 }
 
+@Composable
+fun DateInputField(
+    value: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    label: String = "Date"
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    OutlinedTextField(
+        value = value,
+        onValueChange = {},
+        readOnly = true,
+        label = { Text(label) },
+        shape = MaterialTheme.shapes.medium,
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Date Picker"
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .focusProperties { canFocus = false }
+            .clickable (
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                onClick()
+            },
+        enabled = false,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            disabledBorderColor = MaterialTheme.colorScheme.outline,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            disabledTextColor = MaterialTheme.colorScheme.onSurface
+        )
+    )
+}
 
 
 @Composable
-fun DatePickerButton(
+fun DatePickerField(
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onDateSelected: (String) -> Unit
@@ -273,8 +294,6 @@ fun DatePickerButton(
             }
         }
     }
-
-
 
 }
 
