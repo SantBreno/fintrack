@@ -21,7 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.devsant.fintrack.model.Transaction
 import kotlin.text.firstOrNull
 
@@ -67,10 +69,17 @@ fun TransactionCard(transaction: Transaction,
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    text = transaction.date,
+                    text = transaction.category,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
+                Text(
+                    text = transaction.date,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                    fontSize = 10.sp
+                )
+
             }
 
             Text(
@@ -80,5 +89,22 @@ fun TransactionCard(transaction: Transaction,
             )
         }
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TransactionCardPreview() {
+    MaterialTheme {
+        TransactionCard(
+            transaction = Transaction(
+                title = "Grocery Shopping",
+                amount = "150.75",
+                date = "2023-09-15",
+                category = "Food",
+                type = "Expense",
+                id = 1
+            )
+        )
     }
 }
