@@ -46,6 +46,12 @@ open class TransactionViewModel : ViewModel() {
             )
         }
     }
+    fun deleteTransaction(id: Int) {
+        val index = transactionList.indexOfFirst { it.id == id }
+        if (index != -1) {
+            transactionList.removeAt(index)
+        }
+    }
 
     open fun getTransactionById(id: Int): Transaction? {
         return transactionList.find { it.id == id }

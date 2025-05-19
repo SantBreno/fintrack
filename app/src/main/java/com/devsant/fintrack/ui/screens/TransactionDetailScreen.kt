@@ -1,6 +1,7 @@
 package com.devsant.fintrack.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -18,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -65,8 +68,9 @@ fun TransactionDetailScreen(
                     .padding(innerPadding)
                     .padding(16.dp)
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
+                Spacer(modifier = Modifier.height(50.dp))
                 OutlinedTextField(
                     value = viewModel.title.value,
                     onValueChange = { viewModel.title.value = it },
@@ -130,24 +134,42 @@ fun TransactionDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
-                    Button(onClick = {
-                        viewModel.updateTransaction(
-                            id = transaction.id,
-                            title = viewModel.title.value,
-                            date = viewModel.date.value,
-                            amount = viewModel.amount.value,
-                            category = viewModel.category.value,
-                            type = viewModel.type.value
-                        )
 
-                    }) {
-                        Text("Save")
-                    }
-                    Button(onClick = { /*DELETE LOGIC*/ }) {
-                        Text("Delete")
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Button(
+                            onClick = {
+                                viewModel.updateTransaction(
+                                    id = transaction.id,
+                                    title = viewModel.title.value,
+                                    date = viewModel.date.value,
+                                    amount = viewModel.amount.value,
+                                    category = viewModel.category.value,
+                                    type = viewModel.type.value
+                                )
+                                navController.popBackStack()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B213F))
+                        ) { Text("Save") }
+
+                        Button(
+                            onClick = {
+                                viewModel.deleteTransaction(transaction.id)
+                                navController.popBackStack()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                        ) { Text("Delete") }
                     }
                 }
+
             }
         }
     }
