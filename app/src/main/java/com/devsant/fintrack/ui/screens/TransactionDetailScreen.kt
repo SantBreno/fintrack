@@ -66,7 +66,7 @@ fun TransactionDetailScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text("FinTrack", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Transaction Details", color = Color.White, fontWeight = FontWeight.Bold)
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color(0xFF1B213F)
