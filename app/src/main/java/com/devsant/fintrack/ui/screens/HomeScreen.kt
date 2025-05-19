@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,13 +52,15 @@ fun HomeScreen(
             navController.navigate("details/${transaction.id}")
         },
         onAddClick = { navController.navigate("addTransactionScreen") },
-        modifier = modifier
+        modifier = modifier,
+        navController = navController
     )
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
     transactionList: List<Transaction>,
+    navController: NavHostController,
     onTransactionClick: (Transaction) -> Unit,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -132,7 +135,7 @@ fun HomeScreenContent(
                 items(transactionList.size) { transaction ->
                     TransactionCard(
                         transaction = transactionList[transaction],
-                        onClick = { onTransactionClick(transactionList[transaction]) }
+                        navController = navController,
                     )
                 }
             }
@@ -179,6 +182,7 @@ fun HomeScreenContentPreview() {
     HomeScreenContent(
         transactionList = sampleTransactions,
         onTransactionClick = {},
-        onAddClick = {}
+        onAddClick = {},
+        navController = NavHostController(LocalContext.current)
     )
 }

@@ -4,10 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devsant.fintrack.model.Transaction
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 open class TransactionViewModel : ViewModel() {
     val transactionList = mutableListOf<Transaction>()
@@ -30,8 +27,33 @@ open class TransactionViewModel : ViewModel() {
             transactionList.add(transaction)
         }
     }
+    fun updateTransaction(
+        id: Int,
+        title: String,
+        date: String,
+        amount: String,
+        category: String,
+        type: String
+    ) {
+        val index = transactionList.indexOfFirst { it.id == id }
+        if (index != -1) {
+            transactionList[index] = transactionList[index].copy(
+                title = title,
+                date = date,
+                amount = amount,
+                category = category,
+                type = type
+            )
+        }
+    }
+    fun deleteTransaction(id: Int) {
+        val index = transactionList.indexOfFirst { it.id == id }
+        if (index != -1) {
+            transactionList.removeAt(index)
+        }
+    }
 
-    fun getTransactionById(id: Int): Transaction? {
+    open fun getTransactionById(id: Int): Transaction? {
         return transactionList.find { it.id == id }
     }
 }
