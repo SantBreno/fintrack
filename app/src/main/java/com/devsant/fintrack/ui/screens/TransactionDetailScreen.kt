@@ -5,14 +5,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -20,6 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +46,11 @@ fun TransactionDetailScreen(
     viewModel: TransactionViewModel = viewModel()
 ) {
     val transaction = viewModel.getTransactionById(transactionId)
+    val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping","Other")
+    val typeOptions = listOf("Expense", "Income")
+
+    var categoryExpanded by remember { mutableStateOf(false) }
+    var typeExpanded by remember { mutableStateOf(false) }
 
 
     transaction?.let {
@@ -66,11 +77,10 @@ fun TransactionDetailScreen(
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .padding(16.dp)
-                    .fillMaxSize(),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                Spacer(modifier = Modifier.height(50.dp))
+
                 OutlinedTextField(
                     value = viewModel.title.value,
                     onValueChange = { viewModel.title.value = it },
@@ -107,32 +117,76 @@ fun TransactionDetailScreen(
                         unfocusedBorderColor = MaterialTheme.colorScheme.surface,
                     )
                 )
-                OutlinedTextField(
-                    value = viewModel.category.value,
-                    onValueChange = { viewModel.category.value = it },
-                    label = { Text("Category") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF1B213F),
-                        unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                ExposedDropdownMenuBox(
+                    expanded = categoryExpanded,
+                    onExpandedChange = { categoryExpanded = !categoryExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.category.value,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Category") },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF1B213F),
+                            unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                        ),
+                        modifier = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
                     )
-                )
-                OutlinedTextField(
-                    value = viewModel.type.value,
-                    onValueChange = { viewModel.type.value = it },
-                    label = { Text("Type") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF1B213F),
-                        unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                    ExposedDropdownMenu(
+                        expanded = categoryExpanded,
+                        onDismissRequest = { categoryExpanded = false }
+                    ) {
+                        categoryOptions.forEach { selection ->
+                            DropdownMenuItem(
+                                text = { Text(selection) },
+                                onClick = {
+                                    viewModel.category.value = selection
+                                    categoryExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+                ExposedDropdownMenuBox(
+                    expanded = typeExpanded,
+                    onExpandedChange = { typeExpanded = !typeExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.type.value,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Type") },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF1B213F),
+                            unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                        ),
+                        modifier = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
                     )
-                )
+                    ExposedDropdownMenu(
+                        expanded = typeExpanded,
+                        onDismissRequest = { typeExpanded = false }
+                    ) {
+                        typeOptions.forEach { selection ->
+                            DropdownMenuItem(
+                                text = { Text(selection) },
+                                onClick = {
+                                    viewModel.type.value = selection
+                                    typeExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
 
                 Box(
