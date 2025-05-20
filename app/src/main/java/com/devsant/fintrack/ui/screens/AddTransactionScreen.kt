@@ -83,7 +83,6 @@ fun AddTransactionScreen(
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding))
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
