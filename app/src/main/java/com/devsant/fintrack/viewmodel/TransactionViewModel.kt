@@ -60,4 +60,16 @@ open class TransactionViewModel : ViewModel() {
     open fun getTransactionById(id: Int): Transaction? {
         return transactionList.find { it.id == id }
     }
+
+    open fun totalIncome(): Double {
+        return transactionList.filter { it.type.equals("Income", ignoreCase = true) }.sumOf { it.amount }
+    }
+
+    open fun totalExpense(): Double {
+        return transactionList.filter { it.type.equals("Expense", ignoreCase = true) }.sumOf { it.amount }
+    }
+
+    open fun totalBalance(): Double {
+        return totalIncome() - totalExpense()
+    }
 }
