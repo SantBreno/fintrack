@@ -31,13 +31,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.R
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
@@ -48,12 +48,14 @@ import com.devsant.fintrack.viewmodel.TransactionViewModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    transactionViewModel: TransactionViewModel) {
+    transactionViewModel: TransactionViewModel
+) {
 
     val transactionList = transactionViewModel.transactionList
 
     HomeScreenContent(
         transactionList = transactionList,
+        transactionViewModel = transactionViewModel,
         onTransactionClick = { transaction ->
             navController.navigate("details/${transaction.id}")
         },
@@ -66,6 +68,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     transactionList: List<Transaction>,
+    transactionViewModel: TransactionViewModel,
     navController: NavHostController,
     onTransactionClick: (Transaction) -> Unit,
     onAddClick: () -> Unit,
@@ -99,6 +102,7 @@ fun HomeScreenContent(
             }
         }
     ) { innerPadding ->
+        val balance = transactionViewModel.totalBalance()
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -123,7 +127,7 @@ fun HomeScreenContent(
                     Text("Total Balance: ",
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                         color = Color.White)
-                    Text("$1000.00",
+                    Text("R$%.2f".format(balance),
                         style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                         color = Color.White)
                 }
@@ -204,10 +208,19 @@ fun HomeScreenContentPreview() {
         Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = 100.00, category = "Utilities", date = "2023-09-05")
     )
 
+    // Dummy ViewModel with mocked balance logic
+    val fakeViewModel = object : TransactionViewModel() {
+
+        override fun totalBalance(): Double {
+            return totalIncome() - totalExpense()
+        }
+    }
+
     HomeScreenContent(
         transactionList = sampleTransactions,
+        transactionViewModel = fakeViewModel,
         onTransactionClick = {},
         onAddClick = {},
-        navController = NavHostController(LocalContext.current)
+        navController = rememberNavController()
     )
 }
