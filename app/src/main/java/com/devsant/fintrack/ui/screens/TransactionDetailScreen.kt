@@ -56,7 +56,7 @@ fun TransactionDetailScreen(
     transaction?.let {
         viewModel.title.value = it.title
         viewModel.date.value = it.date
-        viewModel.amount.value = it.amount
+        viewModel.amount.value = it.amount.toString()
         viewModel.category.value = it.category
         viewModel.type.value = it.type
 
@@ -201,11 +201,12 @@ fun TransactionDetailScreen(
                     ){
                         Button(
                             onClick = {
+                                val parsedAmount = viewModel.amount.value.toDoubleOrNull() ?: 0.0
                                 viewModel.updateTransaction(
                                     id = transaction.id,
                                     title = viewModel.title.value,
                                     date = viewModel.date.value,
-                                    amount = viewModel.amount.value,
+                                    amount = parsedAmount,
                                     category = viewModel.category.value,
                                     type = viewModel.type.value
                                 )
@@ -238,7 +239,7 @@ fun TransactionDetailScreenPreview() {
     val fakeTransaction = Transaction(
         id = 1,
         title = "Groceries",
-        amount = "150.0",
+        amount = 150.00,
         date = "19/05/2025",
         category = "Food",
         type = "Expense"

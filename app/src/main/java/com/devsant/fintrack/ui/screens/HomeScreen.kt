@@ -1,7 +1,7 @@
 package com.devsant.fintrack.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import com.devsant.fintrack.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +24,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,7 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.devsant.fintrack.R
 import com.devsant.fintrack.model.Transaction
+import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.TransactionCard
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
@@ -65,6 +71,10 @@ fun HomeScreenContent(
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
+    var selectedCategory by remember { mutableStateOf("") }
+    val categories = listOf(
+        "All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,7 +87,10 @@ fun HomeScreenContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddClick, shape = CircleShape, containerColor = Color.White){
+            FloatingActionButton(
+                onClick = onAddClick,
+                shape = CircleShape,
+                containerColor = Color.White){
                 Image(
                     painter = painterResource(id = R.drawable.add_icon),
                     contentDescription = "Add Transaction",
@@ -98,7 +111,8 @@ fun HomeScreenContent(
                     .height(120.dp),
                 shape = RoundedCornerShape(25.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1B213F))
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF003D5F)),
+                border = BorderStroke(3.dp, color = Color(0XFFE83A44))
             ) {
                 Column(modifier = Modifier
                     .fillMaxSize()
@@ -106,8 +120,12 @@ fun HomeScreenContent(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Total Balance: ", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
-                    Text("$1000.00", style = MaterialTheme.typography.headlineLarge, color = Color.White)
+                    Text("Total Balance: ",
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                        color = Color.White)
+                    Text("$1000.00",
+                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                        color = Color.White)
                 }
             }
 
@@ -117,9 +135,15 @@ fun HomeScreenContent(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                StatCard("Income", "R$1000.00", modifier = Modifier.weight(1f))
-                StatCard("Expense", "R$500.00", modifier = Modifier.weight(1f))
+                StatCard("Income", modifier = Modifier.weight(1f))
+                StatCard("Expenses", modifier = Modifier.weight(1f))
             }
+
+            CategorySelector(
+                categories = categories,
+                selectedCategory = selectedCategory,
+                onCategorySelected = { selectedCategory = it}
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             Text("Recent Transactions",
@@ -132,7 +156,11 @@ fun HomeScreenContent(
                     .fillMaxSize()
                     .padding(top = 16.dp)
             ) {
-                items(transactionList.size) { transaction ->
+                val filteredTransactions = transactionList.filter {
+                    selectedCategory == "All" || selectedCategory.isEmpty() || it.category == selectedCategory
+                }
+
+                items(filteredTransactions.size) { transaction ->
                     TransactionCard(
                         transaction = transactionList[transaction],
                         navController = navController,
@@ -143,14 +171,16 @@ fun HomeScreenContent(
     }
 }
 
+
 @Composable
-fun StatCard(title: String, amount: String, modifier: Modifier = Modifier) {
+fun StatCard(title: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
-            .height(80.dp),
+            .height(40.dp),
         shape = RoundedCornerShape(25.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1B213F))
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF003D5F)),
+        border = BorderStroke(3.dp, color = Color(0XFFEE7779))
     ) {
         Column(
             modifier = Modifier
@@ -160,23 +190,18 @@ fun StatCard(title: String, amount: String, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
-            Text(amount, style = MaterialTheme.typography.headlineLarge, fontSize = 20.sp, color = Color.White)
         }
     }
 }
-
-
-
-
 
 
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenContentPreview() {
     val sampleTransactions = listOf(
-        Transaction(id = 1, title = "Grocery", type = "Expense", amount = "1500", category = "Food", date = "2023-09-15"),
-        Transaction(id = 2, title = "Salary", type = "Income", amount = "25000", category = "Salary", date = "2023-09-10"),
-        Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = "100", category = "Utilities", date = "2023-09-05")
+        Transaction(id = 1, title = "Grocery", type = "Expense", amount = 1500.00, category = "Food", date = "2023-09-15"),
+        Transaction(id = 2, title = "Salary", type = "Income", amount = 25000.00, category = "Salary", date = "2023-09-10"),
+        Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = 100.00, category = "Utilities", date = "2023-09-05")
     )
 
     HomeScreenContent(

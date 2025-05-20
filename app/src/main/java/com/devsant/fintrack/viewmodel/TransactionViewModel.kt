@@ -14,13 +14,17 @@ open class TransactionViewModel : ViewModel() {
     var category = mutableStateOf("")
     var type = mutableStateOf("")
 
+    private fun parseAmount(): Double {
+        return amount.value.toDoubleOrNull() ?: 0.0
+    }
+
     fun addTransaction () {
         viewModelScope.launch {
             val transaction = Transaction(
                 id = 0,
                 title = title.value,
                 date = date.value,
-                amount = amount.value,
+                amount = parseAmount(),
                 category = category.value,
                 type = type.value
             )
@@ -31,7 +35,7 @@ open class TransactionViewModel : ViewModel() {
         id: Int,
         title: String,
         date: String,
-        amount: String,
+        amount: Double,
         category: String,
         type: String
     ) {
