@@ -72,7 +72,8 @@ fun HomeScreenContent(
     modifier: Modifier = Modifier
 ){
     var selectedCategory by remember { mutableStateOf("") }
-    val categories = listOf("All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
+    val categories = listOf(
+        "All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
 
     Scaffold(
         topBar = {
@@ -86,7 +87,10 @@ fun HomeScreenContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddClick, shape = CircleShape, containerColor = Color.White){
+            FloatingActionButton(
+                onClick = onAddClick,
+                shape = CircleShape,
+                containerColor = Color.White){
                 Image(
                     painter = painterResource(id = R.drawable.add_icon),
                     contentDescription = "Add Transaction",
@@ -116,8 +120,12 @@ fun HomeScreenContent(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Total Balance: ", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
-                    Text("$1000.00", style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
+                    Text("Total Balance: ",
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                        color = Color.White)
+                    Text("$1000.00",
+                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                        color = Color.White)
                 }
             }
 
@@ -191,9 +199,9 @@ fun StatCard(title: String, modifier: Modifier = Modifier) {
 @Composable
 fun HomeScreenContentPreview() {
     val sampleTransactions = listOf(
-        Transaction(id = 1, title = "Grocery", type = "Expense", amount = "1500", category = "Food", date = "2023-09-15"),
-        Transaction(id = 2, title = "Salary", type = "Income", amount = "25000", category = "Salary", date = "2023-09-10"),
-        Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = "100", category = "Utilities", date = "2023-09-05")
+        Transaction(id = 1, title = "Grocery", type = "Expense", amount = 1500.00, category = "Food", date = "2023-09-15"),
+        Transaction(id = 2, title = "Salary", type = "Income", amount = 25000.00, category = "Salary", date = "2023-09-10"),
+        Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = 100.00, category = "Utilities", date = "2023-09-05")
     )
 
     HomeScreenContent(
