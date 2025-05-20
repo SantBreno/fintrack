@@ -1,5 +1,6 @@
 package com.devsant.fintrack.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -106,7 +107,8 @@ fun HomeScreenContent(
                     .height(120.dp),
                 shape = RoundedCornerShape(25.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1B213F))
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF003D5F)),
+                border = BorderStroke(3.dp, color = Color(0XFFE83A44))
             ) {
                 Column(modifier = Modifier
                     .fillMaxSize()
@@ -115,7 +117,7 @@ fun HomeScreenContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text("Total Balance: ", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
-                    Text("$1000.00", style = MaterialTheme.typography.headlineLarge, color = Color.White)
+                    Text("$1000.00", style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
                 }
             }
 
@@ -125,8 +127,8 @@ fun HomeScreenContent(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                StatCard("Income", "R$1000.00", modifier = Modifier.weight(1f))
-                StatCard("Expense", "R$500.00", modifier = Modifier.weight(1f))
+                StatCard("Income", modifier = Modifier.weight(1f))
+                StatCard("Expenses", modifier = Modifier.weight(1f))
             }
 
             CategorySelector(
@@ -163,13 +165,14 @@ fun HomeScreenContent(
 
 
 @Composable
-fun StatCard(title: String, amount: String, modifier: Modifier = Modifier) {
+fun StatCard(title: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
-            .height(80.dp),
+            .height(40.dp),
         shape = RoundedCornerShape(25.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1B213F))
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF003D5F)),
+        border = BorderStroke(3.dp, color = Color(0XFFEE7779))
     ) {
         Column(
             modifier = Modifier
@@ -179,7 +182,6 @@ fun StatCard(title: String, amount: String, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
-            Text(amount, style = MaterialTheme.typography.headlineLarge, fontSize = 20.sp, color = Color.White)
         }
     }
 }
