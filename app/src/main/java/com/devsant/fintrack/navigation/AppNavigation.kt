@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.devsant.fintrack.ui.screens.AddTransactionScreen
+import com.devsant.fintrack.ui.screens.ExpenseDetailScreen
 import com.devsant.fintrack.ui.screens.HomeScreen
 import com.devsant.fintrack.ui.screens.TransactionDetailScreen
 import com.devsant.fintrack.viewmodel.TransactionViewModel
@@ -35,6 +36,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 navController = navController,
                 viewModel = transactionViewModel
             )
+        }
+        composable("expenseDetailScreen") {
+            ExpenseDetailScreen(modifier, navController)
         }
     }
 }

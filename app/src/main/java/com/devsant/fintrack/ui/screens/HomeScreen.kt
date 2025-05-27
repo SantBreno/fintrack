@@ -2,6 +2,7 @@ package com.devsant.fintrack.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -139,8 +140,8 @@ fun HomeScreenContent(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                StatCard("Income", modifier = Modifier.weight(1f))
-                StatCard("Expenses", modifier = Modifier.weight(1f))
+                StatCard("Income", modifier = Modifier.weight(1f), navController, "incomeDetailScreen")
+                StatCard("Expenses", modifier = Modifier.weight(1f), navController, "expenseDetailScreen")
             }
 
             CategorySelector(
@@ -177,9 +178,10 @@ fun HomeScreenContent(
 
 
 @Composable
-fun StatCard(title: String, modifier: Modifier = Modifier) {
+fun StatCard(title: String, modifier: Modifier = Modifier,navController: NavHostController, type: String) {
     Card(
         modifier = modifier
+            .clickable { navController.navigate(type) }
             .height(40.dp),
         shape = RoundedCornerShape(25.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
