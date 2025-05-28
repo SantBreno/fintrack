@@ -38,7 +38,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         }
         composable("expenseDetailScreen") {
-            ExpenseDetailScreen(modifier, navController)
+            ExpenseDetailScreen(modifier, navController, transactionViewModel)
         }
     }
 }
