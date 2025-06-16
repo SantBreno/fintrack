@@ -16,8 +16,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.TransactionCard
 import com.devsant.fintrack.viewmodel.TransactionViewModel
@@ -75,4 +78,22 @@ fun IncomeDetailScreen(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun IncomeDetailScreenPreview() {
+    val mockTransactionList = mutableListOf(
+        Transaction(id = 1, title = "Jorgen S.", type = "Income", amount = 1500.00, category = "Food", date = "2023-09-15"),
+        Transaction(id = 2, title = "Salary", type = "Income", amount = 25000.00, category = "Salary", date = "2023-09-10"),
+    )
+
+    val mockViewModel = object : TransactionViewModel() {
+        override val transactionList = mockTransactionList
+    }
+
+    IncomeDetailScreen(
+        navController = rememberNavController(),
+        transactionViewModel = mockViewModel
+    )
 }

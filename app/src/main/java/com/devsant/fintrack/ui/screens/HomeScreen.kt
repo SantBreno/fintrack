@@ -204,14 +204,14 @@ fun StatCard(title: String, modifier: Modifier = Modifier,navController: NavHost
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenContentPreview() {
-    val sampleTransactions = listOf(
+    val mockTransactions = listOf(
         Transaction(id = 1, title = "Grocery", type = "Expense", amount = 1500.00, category = "Food", date = "2023-09-15"),
         Transaction(id = 2, title = "Salary", type = "Income", amount = 25000.00, category = "Salary", date = "2023-09-10"),
         Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = 100.00, category = "Utilities", date = "2023-09-05")
     )
 
     // Dummy ViewModel with mocked balance logic
-    val fakeViewModel = object : TransactionViewModel() {
+    val mockViewModel = object : TransactionViewModel() {
 
         override fun totalBalance(): Double {
             return totalIncome() - totalExpense()
@@ -219,8 +219,8 @@ fun HomeScreenContentPreview() {
     }
 
     HomeScreenContent(
-        transactionList = sampleTransactions,
-        transactionViewModel = fakeViewModel,
+        transactionList = mockTransactions,
+        transactionViewModel = mockViewModel,
         onTransactionClick = {},
         onAddClick = {},
         navController = rememberNavController()

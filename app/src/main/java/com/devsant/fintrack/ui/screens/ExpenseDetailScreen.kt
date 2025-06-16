@@ -16,11 +16,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.TransactionCard
 import com.devsant.fintrack.viewmodel.TransactionViewModel
+import com.devsant.fintrack.model.Transaction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,13 +81,21 @@ fun ExpenseDetailScreen(
     }
 }
 
-/*
+
 @Preview(showBackground = true)
 @Composable
 fun ExpenseDetailScreenPreview() {
-    val navController = rememberNavController()
+    val mockTransactionList = mutableListOf(
+        Transaction(id = 1, title = "Grocery", type = "Expense", amount = 1500.00, category = "Food", date = "2023-09-15"),
+        Transaction(id = 2, title = "Internet Bill", type = "Expense", amount = 100.00, category = "Utilities", date = "2023-09-05")
+    )
+
+    val mockViewModel = object : TransactionViewModel() {
+        override val transactionList = mockTransactionList
+    }
 
     ExpenseDetailScreen(
-        navController = navController
+        navController = rememberNavController(),
+        transactionViewModel = mockViewModel
     )
-}*/
+}
