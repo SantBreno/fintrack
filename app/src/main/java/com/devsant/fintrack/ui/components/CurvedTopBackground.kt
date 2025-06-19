@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Path
 @Composable
 fun CurvedTopBackground(
     modifier: Modifier = Modifier,
-    color: Color = Color(0xFFFF6B5B)
+    color: Color = Color.Black
 ) {
     Canvas(modifier = modifier) {
         val width = size.width

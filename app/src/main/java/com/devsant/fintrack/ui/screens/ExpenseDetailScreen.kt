@@ -78,7 +78,8 @@ fun ExpenseDetailScreen(
                 CurvedTopBackground(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(200.dp),
+                    color = Color(0xFFFF6B5B)
                 )
 
                 Card(
@@ -90,7 +91,7 @@ fun ExpenseDetailScreen(
                     shape = RoundedCornerShape(15.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(3.dp, color = Color.Red)
+                    border = BorderStroke(3.dp, color = Color(0xFFFF6B5B))
                 ) {
                     Column(
                         modifier = Modifier
@@ -102,7 +103,7 @@ fun ExpenseDetailScreen(
                         Text(
                             "R$%.2f".format(totalExpense),
                             style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                            color = Color.Red
+                            color = Color(0xFFFF6B5B)
                         )
                     }
                 }
