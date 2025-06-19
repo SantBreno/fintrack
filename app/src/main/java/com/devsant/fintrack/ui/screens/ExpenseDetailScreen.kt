@@ -2,6 +2,7 @@ package com.devsant.fintrack.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +36,7 @@ import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.TransactionCard
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 import com.devsant.fintrack.model.Transaction
+import com.devsant.fintrack.ui.components.CurvedTopBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,8 +55,11 @@ fun ExpenseDetailScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Expense Details")
-                }
+                    Text("Expense Details", color = Color.White, fontWeight = FontWeight.Bold)
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFFFF6B5B)
+                )
             )
         }
     ) { innerPadding ->
@@ -61,32 +67,49 @@ fun ExpenseDetailScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
                 .fillMaxWidth()
         ) {
 
-            Card(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp),
-                shape = RoundedCornerShape(15.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(3.dp, color = Color.Red)
+                    .height(160.dp)
             ) {
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                CurvedTopBackground(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
+
+                Card(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 40.dp)
+                        .fillMaxWidth(0.85f)
+                        .height(100.dp),
+                    shape = RoundedCornerShape(15.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(3.dp, color = Color.Red)
                 ) {
-                    Text("R$%.2f".format(totalExpense),
-                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                        color = Color.Red)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "R$%.2f".format(totalExpense),
+                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                            color = Color.Red
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+
+            Spacer(modifier = Modifier.height(5.dp))
 
             CategorySelector(
                 categories = categories,
@@ -96,6 +119,7 @@ fun ExpenseDetailScreen(
 
             LazyColumn(
                 modifier = Modifier
+                    .padding(horizontal = 16.dp)
                     .fillMaxSize()
             ){
                 val filteredTransactions = transactionList.filter {
@@ -114,6 +138,7 @@ fun ExpenseDetailScreen(
 
     }
 }
+
 
 
 @Preview(showBackground = true)

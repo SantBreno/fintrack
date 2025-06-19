@@ -108,10 +108,10 @@ fun HomeScreenContent(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxWidth()
-                .padding(16.dp)
         ) {
             Card(
                 modifier = Modifier
+                    .padding(16.dp)
                     .fillMaxWidth()
                     .height(120.dp),
                 shape = RoundedCornerShape(25.dp),
@@ -136,7 +136,7 @@ fun HomeScreenContent(
 
             Row(
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
+                    .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -151,25 +151,31 @@ fun HomeScreenContent(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text("Recent Transactions",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                fontSize = 20.sp
-            )
-
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 16.dp)
+                    .padding(horizontal = 16.dp)
             ) {
-                val filteredTransactions = transactionList.filter {
-                    selectedCategory == "All" || selectedCategory.isEmpty() || it.category == selectedCategory
-                }
+                Text(
+                    "Recent Transactions",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    fontSize = 20.sp
+                )
 
-                items(filteredTransactions.size) { transaction ->
-                    TransactionCard(
-                        transaction = transactionList[transaction],
-                        navController = navController,
-                    )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    val filteredTransactions = transactionList.filter {
+                        selectedCategory == "All" || selectedCategory.isEmpty() || it.category == selectedCategory
+                    }
+
+                    items(filteredTransactions.size) { transaction ->
+                        TransactionCard(
+                            transaction = transactionList[transaction],
+                            navController = navController,
+                        )
+                    }
                 }
             }
         }
