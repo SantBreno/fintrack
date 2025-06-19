@@ -115,7 +115,8 @@ fun ExpenseDetailScreen(
             CategorySelector(
                 categories = categories,
                 selectedCategory = selectedCategory,
-                onCategorySelected = { selectedCategory = it}
+                onCategorySelected = { selectedCategory = it},
+                borderColor = Color(0xFFFF6B5B)
             )
 
             LazyColumn(

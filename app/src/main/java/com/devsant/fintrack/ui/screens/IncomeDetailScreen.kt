@@ -115,7 +115,8 @@ fun IncomeDetailScreen(
             CategorySelector(
                 categories = categories,
                 selectedCategory = selectedCategory,
-                onCategorySelected = { selectedCategory = it}
+                onCategorySelected = { selectedCategory = it},
+                borderColor = Color(0xFF56B25C)
             )
 
             LazyColumn(
