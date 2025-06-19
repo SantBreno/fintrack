@@ -7,7 +7,7 @@ import com.devsant.fintrack.model.Transaction
 import kotlinx.coroutines.launch
 
 open class TransactionViewModel : ViewModel() {
-    val transactionList = mutableListOf<Transaction>()
+    open val transactionList = mutableListOf<Transaction>()
     var title = mutableStateOf("")
     var date = mutableStateOf("")
     var amount = mutableStateOf("")

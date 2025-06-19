@@ -20,7 +20,8 @@ import androidx.compose.ui.unit.dp
 fun CategorySelector(
     categories: List<String>,
     selectedCategory: String,
-    onCategorySelected: (String) -> Unit
+    onCategorySelected: (String) -> Unit,
+    borderColor: Color = Color.White
 ) {
     Row(
         modifier = Modifier
@@ -32,7 +33,7 @@ fun CategorySelector(
             val isSelected = category == selectedCategory
             FilterChip(
                 colors = FilterChipDefaults.filterChipColors(MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, Color(0xFF1B213F)),
+                border = BorderStroke(1.dp, borderColor),
                 selected = isSelected,
                 onClick = { onCategorySelected(category) },
                 label = { Text(category, fontWeight = FontWeight.Bold) },
