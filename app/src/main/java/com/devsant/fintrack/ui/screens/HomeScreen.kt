@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,6 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.R
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
+import com.devsant.fintrack.ui.components.SearchBar
 import com.devsant.fintrack.ui.components.TransactionCard
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
@@ -104,6 +106,7 @@ fun HomeScreenContent(
         }
     ) { innerPadding ->
         val balance = transactionViewModel.totalBalance()
+        var searchQueryFieldValue by remember { mutableStateOf(TextFieldValue("")) }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -150,12 +153,21 @@ fun HomeScreenContent(
                 onCategorySelected = { selectedCategory = it}
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
+                SearchBar(
+                    hint = "Search...",
+                    searchQuery = searchQueryFieldValue,
+                    onSearchQueryChange = { searchQueryFieldValue = it }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Text(
                     "Recent Transactions",
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
@@ -167,7 +179,10 @@ fun HomeScreenContent(
                         .fillMaxSize()
                 ) {
                     val filteredTransactions = transactionList.filter {
-                        selectedCategory == "All" || selectedCategory.isEmpty() || it.category == selectedCategory
+                        (selectedCategory.isEmpty() || it.category == selectedCategory) &&
+                                (searchQueryFieldValue.text.isBlank() ||
+                                        it.title.contains(searchQueryFieldValue.text, ignoreCase = true))
+
                     }
 
                     items(filteredTransactions.size) { transaction ->
