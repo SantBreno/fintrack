@@ -238,8 +238,7 @@ fun TransactionDetailScreen(
 @Preview(showBackground = true)
 @Composable
 fun TransactionDetailScreenPreview() {
-    // Fake transaction for preview
-    val fakeTransaction = Transaction(
+    val mockTransaction = Transaction(
         id = 1,
         title = "Groceries",
         amount = 150.00,
@@ -248,19 +247,17 @@ fun TransactionDetailScreenPreview() {
         type = "Expense"
     )
 
-    // Fake ViewModel
-    val fakeViewModel = object : TransactionViewModel() {
+    val mockViewModel = object : TransactionViewModel() {
         override fun getTransactionById(id: Int): Transaction? {
-            return fakeTransaction
+            return mockTransaction
         }
     }
 
-    // Fake NavController
-    val fakeNavController = rememberNavController()
+    val mockNavController = rememberNavController()
 
     TransactionDetailScreen(
         transactionId = 1,
-        navController = fakeNavController,
-        viewModel = fakeViewModel
+        navController = mockNavController,
+        viewModel = mockViewModel
     )
 }

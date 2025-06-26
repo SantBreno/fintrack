@@ -1,13 +1,16 @@
 package com.devsant.fintrack.viewmodel
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.devsant.fintrack.model.Transaction
-import kotlinx.coroutines.launch
 
 open class TransactionViewModel : ViewModel() {
-    val transactionList = mutableListOf<Transaction>()
+    var transactionList = mutableStateListOf<Transaction>()
+        private set
+
+    private var nextId = 1
+
     var title = mutableStateOf("")
     var date = mutableStateOf("")
     var amount = mutableStateOf("")
@@ -18,19 +21,18 @@ open class TransactionViewModel : ViewModel() {
         return amount.value.toDoubleOrNull() ?: 0.0
     }
 
-    fun addTransaction () {
-        viewModelScope.launch {
-            val transaction = Transaction(
-                id = 0,
-                title = title.value,
-                date = date.value,
-                amount = parseAmount(),
-                category = category.value,
-                type = type.value
-            )
-            transactionList.add(transaction)
-        }
+    fun addTransaction() {
+        val transaction = Transaction(
+            id = nextId++,
+            title = title.value,
+            date = date.value,
+            amount = parseAmount(),
+            category = category.value,
+            type = type.value
+        )
+        transactionList.add(transaction)
     }
+
     fun updateTransaction(
         id: Int,
         title: String,
@@ -50,6 +52,7 @@ open class TransactionViewModel : ViewModel() {
             )
         }
     }
+
     fun deleteTransaction(id: Int) {
         val index = transactionList.indexOfFirst { it.id == id }
         if (index != -1) {
@@ -62,11 +65,13 @@ open class TransactionViewModel : ViewModel() {
     }
 
     open fun totalIncome(): Double {
-        return transactionList.filter { it.type.equals("Income", ignoreCase = true) }.sumOf { it.amount }
+        return transactionList.filter { it.type.equals("Income", ignoreCase = true) }
+            .sumOf { it.amount }
     }
 
     open fun totalExpense(): Double {
-        return transactionList.filter { it.type.equals("Expense", ignoreCase = true) }.sumOf { it.amount }
+        return transactionList.filter { it.type.equals("Expense", ignoreCase = true) }
+            .sumOf { it.amount }
     }
 
     open fun totalBalance(): Double {

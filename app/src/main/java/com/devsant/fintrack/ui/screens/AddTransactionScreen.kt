@@ -68,7 +68,7 @@ fun AddTransactionScreen(
     var categoryExpanded by remember { mutableStateOf(false) }
     var typeExpanded by remember { mutableStateOf(false) }
 
-
+//
     Scaffold(
         topBar = {
             TopAppBar(
