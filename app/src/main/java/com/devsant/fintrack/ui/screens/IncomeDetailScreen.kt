@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,11 +33,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
+import com.devsant.fintrack.ui.components.CurvedTopBackground
 import com.devsant.fintrack.ui.components.TransactionCard
 import com.devsant.fintrack.viewmodel.TransactionViewModel
-import com.devsant.fintrack.model.Transaction
-import com.devsant.fintrack.ui.components.CurvedTopBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,41 +119,51 @@ fun IncomeDetailScreen(
                 onCategorySelected = { selectedCategory = it},
                 borderColor = Color(0xFF56B25C)
             )
+            val filteredTransactions = transactionList.filter {
+                it.type == "Income" || it.type != "Expense" &&
+                        (selectedCategory == "All" || selectedCategory.isEmpty() || it.category == selectedCategory)
+            }
 
             LazyColumn(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxSize()
             ){
-                val filteredTransactions = transactionList.filter {
-                    it.type == "Income" &&
-                            (selectedCategory == "All" || selectedCategory.isEmpty() || it.category == selectedCategory)
-                }
 
-                items(filteredTransactions.size) { transaction ->
+                items(filteredTransactions, key = { it.id }) { transaction ->
                     TransactionCard(
-                        transaction = transactionList[transaction],
-                        navController = navController,
+                        transaction = transaction,
+                        navController = navController
                     )
                 }
             }
         }
-
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
 fun IncomeDetailScreenPreview() {
-    val mockTransactionList = mutableListOf(
-        Transaction(id = 1, title = "Grocery", type = "Income", amount = 1500.00, category = "Food", date = "2023-09-15"),
-        Transaction(id = 2, title = "Internet Bill", type = "Income", amount = 100.00, category = "Utilities", date = "2023-09-05")
-    )
-
     val mockViewModel = object : TransactionViewModel() {
-        override val transactionList = mockTransactionList
+        init {
+            transactionList.addAll(
+                listOf(
+                    Transaction(
+                        id = 1, title = "Freelance Project", date = "2025-06-15", amount = 1500.0, category = "Work", type = "Income"
+                    ),
+                    Transaction(
+                        id = 2, title = "Gift", date = "2025-06-10", amount = 300.0, category = "Other", type = "Income"
+                    ),
+                    Transaction(
+                        id = 3, title = "Groceries", date = "2025-06-09", amount = 200.0, category = "Food", type = "Income"
+                    )
+                )
+            )
+        }
+
+        override fun totalIncome(): Double {
+            return transactionList.filter { it.type == "Income" }.sumOf { it.amount }
+        }
     }
 
     IncomeDetailScreen(
