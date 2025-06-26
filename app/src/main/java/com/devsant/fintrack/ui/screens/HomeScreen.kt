@@ -2,6 +2,7 @@ package com.devsant.fintrack.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.R
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
+import com.devsant.fintrack.ui.components.SearchBar
 import com.devsant.fintrack.ui.components.TransactionCard
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
@@ -103,14 +106,15 @@ fun HomeScreenContent(
         }
     ) { innerPadding ->
         val balance = transactionViewModel.totalBalance()
+        var searchQueryFieldValue by remember { mutableStateOf(TextFieldValue("")) }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxWidth()
-                .padding(16.dp)
         ) {
             Card(
                 modifier = Modifier
+                    .padding(16.dp)
                     .fillMaxWidth()
                     .height(120.dp),
                 shape = RoundedCornerShape(25.dp),
@@ -135,12 +139,12 @@ fun HomeScreenContent(
 
             Row(
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
+                    .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                StatCard("Income", modifier = Modifier.weight(1f))
-                StatCard("Expenses", modifier = Modifier.weight(1f))
+                StatCard("Income", modifier = Modifier.weight(1f), navController, "incomeDetailScreen")
+                StatCard("Expenses", modifier = Modifier.weight(1f), navController, "expenseDetailScreen")
             }
 
             CategorySelector(
@@ -149,26 +153,44 @@ fun HomeScreenContent(
                 onCategorySelected = { selectedCategory = it}
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("Recent Transactions",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                fontSize = 20.sp
-            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 16.dp)
+                    .padding(horizontal = 16.dp)
             ) {
-                val filteredTransactions = transactionList.filter {
-                    selectedCategory == "All" || selectedCategory.isEmpty() || it.category == selectedCategory
-                }
+                SearchBar(
+                    hint = "Search...",
+                    searchQuery = searchQueryFieldValue,
+                    onSearchQueryChange = { searchQueryFieldValue = it }
+                )
 
-                items(filteredTransactions.size) { transaction ->
-                    TransactionCard(
-                        transaction = transactionList[transaction],
-                        navController = navController,
-                    )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    "Recent Transactions",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    fontSize = 20.sp
+                )
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    val filteredTransactions = transactionList.filter {
+                        (selectedCategory.isEmpty() || it.category == selectedCategory) &&
+                                (searchQueryFieldValue.text.isBlank() ||
+                                        it.title.contains(searchQueryFieldValue.text, ignoreCase = true))
+
+                    }
+
+                    items(filteredTransactions.size) { transaction ->
+                        TransactionCard(
+                            transaction = transactionList[transaction],
+                            navController = navController,
+                        )
+                    }
                 }
             }
         }
@@ -177,9 +199,10 @@ fun HomeScreenContent(
 
 
 @Composable
-fun StatCard(title: String, modifier: Modifier = Modifier) {
+fun StatCard(title: String, modifier: Modifier = Modifier,navController: NavHostController, type: String) {
     Card(
         modifier = modifier
+            .clickable { navController.navigate(type) }
             .height(40.dp),
         shape = RoundedCornerShape(25.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -202,14 +225,14 @@ fun StatCard(title: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenContentPreview() {
-    val sampleTransactions = listOf(
+    val mockTransactions = listOf(
         Transaction(id = 1, title = "Grocery", type = "Expense", amount = 1500.00, category = "Food", date = "2023-09-15"),
         Transaction(id = 2, title = "Salary", type = "Income", amount = 25000.00, category = "Salary", date = "2023-09-10"),
         Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = 100.00, category = "Utilities", date = "2023-09-05")
     )
 
     // Dummy ViewModel with mocked balance logic
-    val fakeViewModel = object : TransactionViewModel() {
+    val mockViewModel = object : TransactionViewModel() {
 
         override fun totalBalance(): Double {
             return totalIncome() - totalExpense()
@@ -217,8 +240,8 @@ fun HomeScreenContentPreview() {
     }
 
     HomeScreenContent(
-        transactionList = sampleTransactions,
-        transactionViewModel = fakeViewModel,
+        transactionList = mockTransactions,
+        transactionViewModel = mockViewModel,
         onTransactionClick = {},
         onAddClick = {},
         navController = rememberNavController()
