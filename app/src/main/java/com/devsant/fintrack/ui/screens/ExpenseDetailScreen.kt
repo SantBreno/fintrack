@@ -42,15 +42,16 @@ import com.devsant.fintrack.viewmodel.TransactionViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseDetailScreen(
+    transactionList: List<Transaction>,
     modifier: Modifier = Modifier,
     navController: NavHostController,
     transactionViewModel: TransactionViewModel
+
 ){
 
     var selectedCategory by remember { mutableStateOf("") }
     val categories = listOf(
         "All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
-    val transactionList = transactionViewModel.transactionList
 
     Scaffold(
         topBar = {
@@ -145,31 +146,20 @@ fun ExpenseDetailScreen(
 @Preview(showBackground = true)
 @Composable
 fun ExpenseDetailScreenPreview() {
-    val mockViewModel = object : TransactionViewModel() {
-        init {
-            transactionList.addAll(
-                listOf(
-                    Transaction(
-                        id = 1, title = "Freelance Project", date = "2025-06-15", amount = 1500.0, category = "Work", type = "Expense"
-                    ),
-                    Transaction(
-                        id = 2, title = "Gift", date = "2025-06-10", amount = 300.0, category = "Other", type = "Expense"
-                    ),
-                    Transaction(
-                        id = 3, title = "Groceries", date = "2025-06-09", amount = 200.0, category = "Food", type = "Expense"
-                    )
-                )
-            )
-        }
+    val mockTransactions = listOf(
+        Transaction(id = 1, title = "Mercado", type = "Expense", amount = 1500.00, category = "Food", date = "2023-09-15")
+    )
 
+    val mockViewModel = object : TransactionViewModel() {
         override fun totalExpense(): Double {
-            return transactionList.filter { it.type == "Expense" }.sumOf { it.amount }
+            return transactionList.filter { it.type == "Expenses"}.sumOf {it.amount}
         }
     }
 
     ExpenseDetailScreen(
         navController = rememberNavController(),
-        transactionViewModel = mockViewModel
+        transactionViewModel = mockViewModel,
+        transactionList = mockTransactions
     )
 }
 
