@@ -130,13 +130,15 @@ fun AddTransactionScreen(
         OutlinedTextField(value = viewModel.amount.value,
             onValueChange = { viewModel.amount.value = it },
             label = { Text("Amount") },
+            singleLine = true,
             shape = MaterialTheme.shapes.medium,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF1B213F),
                 unfocusedBorderColor = Color(0xFF1B213F),
             ),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth())
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         ExposedDropdownMenuBox(
             expanded = categoryExpanded,

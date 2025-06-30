@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -44,8 +42,8 @@ import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.R
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
+import com.devsant.fintrack.ui.components.FilteredTransactionList
 import com.devsant.fintrack.ui.components.SearchBar
-import com.devsant.fintrack.ui.components.TransactionCard
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
 @Composable
@@ -175,28 +173,19 @@ fun HomeScreenContent(
                     fontSize = 20.sp
                 )
 
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    val filteredTransactions = transactionList.filter {
-                        (selectedCategory.isEmpty() || it.category == selectedCategory) &&
-                                (searchQueryFieldValue.text.isBlank() ||
-                                        it.title.contains(searchQueryFieldValue.text, ignoreCase = true))
-
-                    }
-
-                    items(filteredTransactions, key = { it.id }) { transaction ->
-                        TransactionCard(
-                            transaction = transaction,
-                            navController = navController
-                        )
-                    }
-                }
+                FilteredTransactionList(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    transactions = transactionList,
+                    typeFilter = "All",
+                    searchQuery = searchQueryFieldValue.text,
+                    selectedCategory = selectedCategory,
+                    navController = navController
+                )
             }
         }
     }
 }
+
 
 
 @Composable
@@ -221,7 +210,6 @@ fun StatCard(title: String, modifier: Modifier = Modifier,navController: NavHost
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
