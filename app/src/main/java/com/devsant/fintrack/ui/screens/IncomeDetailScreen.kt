@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,18 +34,36 @@ import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.CurvedTopBackground
-import com.devsant.fintrack.ui.components.TransactionCard
+import com.devsant.fintrack.ui.components.FilteredTransactionList
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IncomeDetailScreen(
-    transactionList: List<Transaction>,
     modifier: Modifier = Modifier,
     navController: NavHostController,
     transactionViewModel: TransactionViewModel
-){
+) {
+    val transactionList = transactionViewModel.transactionList
 
+    IncomeScreenContent(
+        transactionList = transactionList,
+        transactionViewModel = transactionViewModel,
+        onTransactionClick = { transaction ->
+            navController.navigate("details/${transaction.id}")
+        },
+        modifier = modifier,
+        navController = navController
+    )
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun IncomeScreenContent(
+    transactionList: List<Transaction>,
+    transactionViewModel: TransactionViewModel,
+    navController: NavHostController,
+    onTransactionClick: (Transaction) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var selectedCategory by remember { mutableStateOf("") }
     val categories = listOf(
         "All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
@@ -119,31 +135,21 @@ fun IncomeDetailScreen(
                 onCategorySelected = { selectedCategory = it},
                 borderColor = Color(0xFF56B25C)
             )
-            val filteredTransactions = transactionList.filter {
-                it.type == "Income" || it.type != "Expense" &&
-                        (selectedCategory == "All" || selectedCategory.isEmpty() || it.category == selectedCategory)
-            }
 
-            LazyColumn(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxSize()
-            ){
-
-                items(filteredTransactions, key = { it.id }) { transaction ->
-                    TransactionCard(
-                        transaction = transaction,
-                        navController = navController
-                    )
-                }
-            }
+            FilteredTransactionList(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                transactions = transactionList,
+                typeFilter = "Income",
+                selectedCategory = selectedCategory,
+                navController = navController
+            )
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun IncomeDetailScreenPreview() {
+fun IncomeScreenContentPreview() {
     val mockTransactions = listOf(
         Transaction(id = 1, title = "Mercado", type = "Income", amount = 1500.00, category = "Food", date = "2023-09-15")
     )
@@ -154,9 +160,10 @@ fun IncomeDetailScreenPreview() {
         }
     }
 
-    IncomeDetailScreen(
-        navController = rememberNavController(),
+    IncomeScreenContent(
+        transactionList = mockTransactions,
         transactionViewModel = mockViewModel,
-        transactionList = mockTransactions
+        navController = rememberNavController(),
+        onTransactionClick = {}
     )
 }
