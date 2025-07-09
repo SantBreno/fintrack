@@ -19,54 +19,66 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.CurvedTopBackground
 import com.devsant.fintrack.ui.components.FilteredTransactionList
 import com.devsant.fintrack.viewmodel.TransactionViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun IncomeDetailScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    transactionViewModel: TransactionViewModel
+    viewModel: TransactionViewModel
 ) {
-    val transactionList = transactionViewModel.transactionList
+    val transactionList by viewModel.transactionList.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+    var totalIncome by remember { mutableStateOf(0.0) }
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            totalIncome = viewModel.totalIncome()
+        }
+    }
 
     IncomeScreenContent(
         transactionList = transactionList,
-        transactionViewModel = transactionViewModel,
+        totalIncome = totalIncome,
+        navController = navController,
         onTransactionClick = { transaction ->
             navController.navigate("details/${transaction.id}")
         },
-        modifier = modifier,
-        navController = navController
+        modifier = modifier
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IncomeScreenContent(
     transactionList: List<Transaction>,
-    transactionViewModel: TransactionViewModel,
+    totalIncome: Double,
     navController: NavHostController,
     onTransactionClick: (Transaction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedCategory by remember { mutableStateOf("") }
     val categories = listOf(
-        "All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
+        "All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other"
+    )
 
     Scaffold(
         topBar = {
@@ -80,7 +92,6 @@ fun IncomeScreenContent(
             )
         }
     ) { innerPadding ->
-        val totalIncome = transactionViewModel.totalIncome()
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -145,25 +156,4 @@ fun IncomeScreenContent(
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun IncomeScreenContentPreview() {
-    val mockTransactions = listOf(
-        Transaction(id = 1, title = "Mercado", type = "Income", amount = 1500.00, category = "Food", date = "2023-09-15")
-    )
-
-    val mockViewModel = object : TransactionViewModel() {
-        override fun totalIncome(): Double {
-            return transactionList.filter { it.type == "Income"}.sumOf {it.amount}
-        }
-    }
-
-    IncomeScreenContent(
-        transactionList = mockTransactions,
-        transactionViewModel = mockViewModel,
-        navController = rememberNavController(),
-        onTransactionClick = {}
-    )
 }
