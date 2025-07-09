@@ -24,40 +24,49 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.R
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.FilteredTransactionList
-import com.devsant.fintrack.ui.components.SearchBar
 import com.devsant.fintrack.viewmodel.TransactionViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    transactionViewModel: TransactionViewModel
+    viewModel: TransactionViewModel
 ) {
 
-    val transactionList = transactionViewModel.transactionList
+    val transactionList by viewModel.transactionList.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+    var balance by remember { mutableDoubleStateOf(0.0) }
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            balance = viewModel.totalBalance()
+        }
+    }
 
     HomeScreenContent(
         transactionList = transactionList,
-        transactionViewModel = transactionViewModel,
+        balance = balance,
         onTransactionClick = { transaction ->
             navController.navigate("details/${transaction.id}")
         },
@@ -70,12 +79,12 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     transactionList: List<Transaction>,
-    transactionViewModel: TransactionViewModel,
+    balance: Double,
     navController: NavHostController,
     onTransactionClick: (Transaction) -> Unit,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
     var selectedCategory by remember { mutableStateOf("") }
     val categories = listOf(
         "All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
@@ -104,8 +113,6 @@ fun HomeScreenContent(
             }
         }
     ) { innerPadding ->
-        val balance = transactionViewModel.totalBalance()
-        var searchQueryFieldValue by remember { mutableStateOf(TextFieldValue("")) }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -159,11 +166,7 @@ fun HomeScreenContent(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                SearchBar(
-                    hint = "Search...",
-                    searchQuery = searchQueryFieldValue,
-                    onSearchQueryChange = { searchQueryFieldValue = it }
-                )
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -176,8 +179,6 @@ fun HomeScreenContent(
                 FilteredTransactionList(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     transactions = transactionList,
-                    typeFilter = "All",
-                    searchQuery = searchQueryFieldValue.text,
                     selectedCategory = selectedCategory,
                     navController = navController
                 )
@@ -211,28 +212,4 @@ fun StatCard(title: String, modifier: Modifier = Modifier,navController: NavHost
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenContentPreview() {
-    val mockTransactions = listOf(
-        Transaction(id = 1, title = "Grocery", type = "Expense", amount = 1500.00, category = "Food", date = "2023-09-15"),
-        Transaction(id = 2, title = "Salary", type = "Income", amount = 25000.00, category = "Salary", date = "2023-09-10"),
-        Transaction(id = 3, title = "Internet Bill", type = "Expense", amount = 100.00, category = "Utilities", date = "2023-09-05")
-    )
 
-    // Dummy ViewModel with mocked balance logic
-    val mockViewModel = object : TransactionViewModel() {
-
-        override fun totalBalance(): Double {
-            return totalIncome() - totalExpense()
-        }
-    }
-
-    HomeScreenContent(
-        transactionList = mockTransactions,
-        transactionViewModel = mockViewModel,
-        onTransactionClick = {},
-        onAddClick = {},
-        navController = rememberNavController()
-    )
-}

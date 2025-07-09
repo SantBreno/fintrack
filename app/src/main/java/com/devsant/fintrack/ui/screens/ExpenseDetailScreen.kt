@@ -19,54 +19,66 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.CurvedTopBackground
 import com.devsant.fintrack.ui.components.FilteredTransactionList
 import com.devsant.fintrack.viewmodel.TransactionViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun ExpenseDetailScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    transactionViewModel: TransactionViewModel
+    viewModel: TransactionViewModel
 ) {
-    val transactionList = transactionViewModel.transactionList
+    val transactionList by viewModel.transactionList.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+    var totalExpense by remember { mutableStateOf(0.0) }
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            totalExpense = viewModel.totalExpense()
+        }
+    }
 
     ExpenseScreenContent(
         transactionList = transactionList,
-        transactionViewModel = transactionViewModel,
+        totalExpense = totalExpense,
+        navController = navController,
         onTransactionClick = { transaction ->
             navController.navigate("details/${transaction.id}")
         },
-        modifier = modifier,
-        navController = navController
+        modifier = modifier
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseScreenContent(
     transactionList: List<Transaction>,
-    transactionViewModel: TransactionViewModel,
+    totalExpense: Double,
     navController: NavHostController,
     onTransactionClick: (Transaction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedCategory by remember { mutableStateOf("") }
     val categories = listOf(
-        "All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
+        "All", "Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other"
+    )
 
     Scaffold(
         topBar = {
@@ -80,7 +92,6 @@ fun ExpenseScreenContent(
             )
         }
     ) { innerPadding ->
-        val totalExpense = transactionViewModel.totalExpense()
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -148,24 +159,5 @@ fun ExpenseScreenContent(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ExpenseScreenContentPreview() {
-    val mockTransactions = listOf(
-        Transaction(id = 1, title = "Mercado", type = "Expense", amount = 1500.00, category = "Food", date = "2023-09-15")
-    )
 
-    val mockViewModel = object : TransactionViewModel() {
-        override fun totalExpense(): Double {
-            return transactionList.filter { it.type == "Expenses"}.sumOf {it.amount}
-        }
-    }
-
-    ExpenseScreenContent(
-        transactionList = mockTransactions,
-        transactionViewModel = mockViewModel,
-        navController = rememberNavController(),
-        onTransactionClick = {}
-    )
-}
 

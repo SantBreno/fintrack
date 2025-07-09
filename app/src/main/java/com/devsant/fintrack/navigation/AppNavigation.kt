@@ -8,41 +8,66 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.devsant.fintrack.data.AppDatabase
 import com.devsant.fintrack.ui.screens.AddTransactionScreen
 import com.devsant.fintrack.ui.screens.ExpenseDetailScreen
 import com.devsant.fintrack.ui.screens.HomeScreen
 import com.devsant.fintrack.ui.screens.IncomeDetailScreen
 import com.devsant.fintrack.ui.screens.TransactionDetailScreen
 import com.devsant.fintrack.viewmodel.TransactionViewModel
+import com.devsant.fintrack.viewmodel.TransactionViewModelFactory
 
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier) {
+fun AppNavigation(
+    modifier: Modifier = Modifier,
+    database: AppDatabase
+) {
     val navController = rememberNavController()
-    val transactionViewModel: TransactionViewModel = viewModel()
+    val viewModel: TransactionViewModel = viewModel(
+        factory = TransactionViewModelFactory(database)
+    )
 
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(
+        navController = navController,
+        startDestination = "home"
+    ) {
         composable("home") {
-            HomeScreen(modifier, navController, transactionViewModel)
+            HomeScreen(
+                modifier = modifier,
+                navController = navController,
+                viewModel = viewModel
+            )
         }
         composable("addTransactionScreen") {
-            AddTransactionScreen(modifier, navController, transactionViewModel)
+            AddTransactionScreen(
+                modifier = modifier,
+                navController = navController,
+                viewModel = viewModel
+            )
         }
         composable(
-            route = "transactionDetailScreen/{transactionId}",
+            route = "details/{transactionId}",
             arguments = listOf(navArgument("transactionId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: -1
             TransactionDetailScreen(
-                transactionId = transactionId,
+                transactionId = backStackEntry.arguments?.getInt("transactionId") ?: -1,
                 navController = navController,
-                viewModel = transactionViewModel
+                viewModel = viewModel
             )
         }
         composable("expenseDetailScreen") {
-            ExpenseDetailScreen(modifier, navController, transactionViewModel)
+            ExpenseDetailScreen(
+                modifier = modifier,
+                navController = navController,
+                viewModel = viewModel
+            )
         }
         composable("incomeDetailScreen") {
-            IncomeDetailScreen(modifier, navController, transactionViewModel)
+            IncomeDetailScreen(
+                modifier = modifier,
+                navController = navController,
+                viewModel = viewModel
+            )
         }
     }
 }

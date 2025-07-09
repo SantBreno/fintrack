@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -25,6 +24,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,37 +32,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionDetailScreen(
-    transactionId : Int,
+    transactionId: Int,
     navController: NavHostController,
-    viewModel: TransactionViewModel = viewModel()
+    viewModel: TransactionViewModel
 ) {
-    val transaction = viewModel.getTransactionById(transactionId)
-    val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping","Other")
-    val typeOptions = listOf("Expense", "Income")
+    val transaction by produceState<Transaction?>(initialValue = null) {
+        viewModel.getTransactionById(transactionId)?.let { value = it }
+    }
 
-    var categoryExpanded by remember { mutableStateOf(false) }
-    var typeExpanded by remember { mutableStateOf(false) }
+    transaction?.let { trans ->
+        val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
+        val typeOptions = listOf("Expense", "Income")
 
+        var categoryExpanded by remember { mutableStateOf(false) }
+        var typeExpanded by remember { mutableStateOf(false) }
 
-    transaction?.let {
-        viewModel.title.value = it.title
-        viewModel.date.value = it.date
-        viewModel.amount.value = it.amount.toString()
-        viewModel.category.value = it.category
-        viewModel.type.value = it.type
-
-
+        viewModel.title.value = trans.title
+        viewModel.date.value = trans.date
+        viewModel.amount.value = trans.amount.toString()
+        viewModel.category.value = trans.category
+        viewModel.type.value = trans.type
 
         Scaffold(
             topBar = {
@@ -79,8 +76,7 @@ fun TransactionDetailScreen(
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                    .padding(16.dp)
             ) {
 
                 OutlinedTextField(
@@ -204,60 +200,29 @@ fun TransactionDetailScreen(
                     ){
                         Button(
                             onClick = {
-                                val parsedAmount = viewModel.amount.value.toDoubleOrNull() ?: 0.0
                                 viewModel.updateTransaction(
-                                    id = transaction.id,
+                                    id = trans.id,
                                     title = viewModel.title.value,
                                     date = viewModel.date.value,
-                                    amount = parsedAmount,
+                                    amount = viewModel.amount.value.toDoubleOrNull() ?: 0.0,
                                     category = viewModel.category.value,
                                     type = viewModel.type.value
                                 )
                                 navController.popBackStack()
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B213F))
+                            }
                         ) { Text("Save") }
 
                         Button(
                             onClick = {
-                                viewModel.deleteTransaction(transaction.id)
+                                viewModel.deleteTransaction(trans.id)
                                 navController.popBackStack()
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                            }
                         ) { Text("Delete") }
                     }
                 }
-
             }
         }
     }
 
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TransactionDetailScreenPreview() {
-    val mockTransaction = Transaction(
-        id = 1,
-        title = "Groceries",
-        amount = 150.00,
-        date = "19/05/2025",
-        category = "Food",
-        type = "Expense"
-    )
-
-    val mockViewModel = object : TransactionViewModel() {
-        override fun getTransactionById(id: Int): Transaction? {
-            return mockTransaction
-        }
-    }
-
-    val mockNavController = rememberNavController()
-
-    TransactionDetailScreen(
-        transactionId = 1,
-        navController = mockNavController,
-        viewModel = mockViewModel
-    )
 }
