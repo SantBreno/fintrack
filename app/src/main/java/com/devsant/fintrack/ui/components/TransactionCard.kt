@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.devsant.fintrack.model.Transaction
-import kotlin.text.firstOrNull
 
 @Composable
 fun TransactionCard(
@@ -36,7 +35,7 @@ fun TransactionCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable {navController.navigate("transactionDetailScreen/${transaction.id}")},
+            .clickable {navController.navigate("details/${transaction.id}") },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
