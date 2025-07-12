@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,14 +37,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.R
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
+import com.devsant.fintrack.ui.components.CurvedTopBackground
 import com.devsant.fintrack.ui.components.FilteredTransactionList
+import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 import kotlinx.coroutines.launch
 
@@ -118,31 +123,47 @@ fun HomeScreenContent(
                 .padding(innerPadding)
                 .fillMaxWidth()
         ) {
-            Card(
+            Box(
                 modifier = Modifier
-                    .padding(16.dp)
                     .fillMaxWidth()
-                    .height(120.dp),
-                shape = RoundedCornerShape(25.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF003D5F)),
-                border = BorderStroke(3.dp, color = Color(0XFFE83A44))
+                    .height(160.dp)
             ) {
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Total Balance: ",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White)
-                    Text("R$%.2f".format(balance),
-                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White)
-                }
-            }
+                CurvedTopBackground(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    color = Color(0xFF1B213F)
+                )
 
+                Card(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 40.dp)
+                        .fillMaxWidth(0.85f)
+                        .height(100.dp),
+                    shape = RoundedCornerShape(15.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF003D5F)),
+                    border = BorderStroke(3.dp, color = Color(0XFFE83A44))
+                ) {
+                    Column(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Total Balance: ",
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White)
+                        Text("R$%.2f".format(balance),
+                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+            }
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -152,6 +173,8 @@ fun HomeScreenContent(
                 StatCard("Income", modifier = Modifier.weight(1f), navController, "incomeDetailScreen")
                 StatCard("Expenses", modifier = Modifier.weight(1f), navController, "expenseDetailScreen")
             }
+
+            Spacer(modifier = Modifier.height(5.dp))
 
             CategorySelector(
                 categories = categories,
@@ -177,7 +200,6 @@ fun HomeScreenContent(
                 )
 
                 FilteredTransactionList(
-                    modifier = Modifier.padding(horizontal = 16.dp),
                     transactions = transactionList,
                     selectedCategory = selectedCategory,
                     navController = navController
@@ -211,5 +233,26 @@ fun StatCard(title: String, modifier: Modifier = Modifier,navController: NavHost
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenContentPreview() {
+    val mockTransactions = listOf(
+        Transaction(1, "Salary", "01/07/2023", 20000.0, "Income", "Income"),
+        Transaction(2, "Rent", "05/07/2023", 5000.0, "Housing", "Expense"),
+        Transaction(3, "Groceries", "10/07/2023", 2500.0, "Food", "Expense")
+    )
+
+    FintrackTheme {
+        HomeScreenContent(
+            transactionList = mockTransactions,
+            balance = 12500.0,
+            navController = rememberNavController(),
+            onTransactionClick = {},
+            onAddClick = {}
+        )
+    }
+}
+
 
 

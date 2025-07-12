@@ -223,6 +223,4 @@ fun TransactionDetailScreen(
             }
         }
     }
-
-
 }
