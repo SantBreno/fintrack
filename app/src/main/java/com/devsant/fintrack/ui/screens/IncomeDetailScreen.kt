@@ -21,6 +21,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,7 +51,7 @@ fun IncomeDetailScreen(
 ) {
     val transactionList by viewModel.transactionList.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    var totalIncome by remember { mutableStateOf(0.0) }
+    var totalIncome by remember { mutableDoubleStateOf(0.0) }
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {

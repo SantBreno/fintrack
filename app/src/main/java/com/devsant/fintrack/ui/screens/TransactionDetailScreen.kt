@@ -49,178 +49,195 @@ fun TransactionDetailScreen(
     }
 
     transaction?.let { trans ->
-        val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
-        val typeOptions = listOf("Expense", "Income")
-
-        var categoryExpanded by remember { mutableStateOf(false) }
-        var typeExpanded by remember { mutableStateOf(false) }
-
         viewModel.title.value = trans.title
         viewModel.date.value = trans.date
         viewModel.amount.value = trans.amount.toString()
         viewModel.category.value = trans.category
         viewModel.type.value = trans.type
 
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text("Transaction Details", color = Color.White, fontWeight = FontWeight.Bold)
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFF1B213F)
-                    )
-                )
-            }
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .padding(16.dp)
-            ) {
+        TransactionDetailScreenContent(
+            transaction = trans,
+            navController = navController,
+            viewModel = viewModel
+        )
+    }
+}
 
-                OutlinedTextField(
-                    value = viewModel.title.value,
-                    onValueChange = { viewModel.title.value = it },
-                    label = { Text("Title") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF1B213F),
-                        unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                    )
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TransactionDetailScreenContent(
+    transaction: Transaction,
+    navController: NavHostController,
+    viewModel: TransactionViewModel
+) {
+
+    val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
+    val typeOptions = listOf("Expense", "Income")
+
+    var categoryExpanded by remember { mutableStateOf(false) }
+    var typeExpanded by remember { mutableStateOf(false) }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("Transaction Details", color = Color.White, fontWeight = FontWeight.Bold)
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF1B213F)
                 )
-                OutlinedTextField(
-                    value = viewModel.date.value,
-                    onValueChange = { viewModel.date.value = it },
-                    label = { Text("Date") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF1B213F),
-                        unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                    )
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
+            OutlinedTextField(
+                value = viewModel.title.value,
+                onValueChange = { viewModel.title.value = it },
+                label = { Text("Title") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF1B213F),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
                 )
+            )
+            OutlinedTextField(
+                value = viewModel.date.value,
+                onValueChange = { viewModel.date.value = it },
+                label = { Text("Date") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF1B213F),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                )
+            )
+            OutlinedTextField(
+                value = viewModel.amount.value,
+                onValueChange = { viewModel.amount.value = it },
+                label = { Text("Amount") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF1B213F),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+            )
+            ExposedDropdownMenuBox(
+                expanded = categoryExpanded,
+                onExpandedChange = { categoryExpanded = !categoryExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 OutlinedTextField(
-                    value = viewModel.amount.value,
-                    onValueChange = { viewModel.amount.value = it },
-                    label = { Text("Amount") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
+                    value = viewModel.category.value,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Category") },
                     shape = MaterialTheme.shapes.medium,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFF1B213F),
                         unfocusedBorderColor = MaterialTheme.colorScheme.surface,
                     ),
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                )
-                ExposedDropdownMenuBox(
-                    expanded = categoryExpanded,
-                    onExpandedChange = { categoryExpanded = !categoryExpanded },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = viewModel.category.value,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Category") },
-                        shape = MaterialTheme.shapes.medium,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF1B213F),
-                            unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                        ),
-                        modifier = Modifier
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                            .fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = categoryExpanded,
-                        onDismissRequest = { categoryExpanded = false }
-                    ) {
-                        categoryOptions.forEach { selection ->
-                            DropdownMenuItem(
-                                text = { Text(selection) },
-                                onClick = {
-                                    viewModel.category.value = selection
-                                    categoryExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-                ExposedDropdownMenuBox(
-                    expanded = typeExpanded,
-                    onExpandedChange = { typeExpanded = !typeExpanded },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = viewModel.type.value,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Type") },
-                        shape = MaterialTheme.shapes.medium,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF1B213F),
-                            unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                        ),
-                        modifier = Modifier
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                            .fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = typeExpanded,
-                        onDismissRequest = { typeExpanded = false }
-                    ) {
-                        typeOptions.forEach { selection ->
-                            DropdownMenuItem(
-                                text = { Text(selection) },
-                                onClick = {
-                                    viewModel.type.value = selection
-                                    typeExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-
-                Box(
                     modifier = Modifier
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                )
+                ExposedDropdownMenu(
+                    expanded = categoryExpanded,
+                    onDismissRequest = { categoryExpanded = false }
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Button(
+                    categoryOptions.forEach { selection ->
+                        DropdownMenuItem(
+                            text = { Text(selection) },
                             onClick = {
-                                viewModel.updateTransaction(
-                                    id = trans.id,
-                                    title = viewModel.title.value,
-                                    date = viewModel.date.value,
-                                    amount = viewModel.amount.value.toDoubleOrNull() ?: 0.0,
-                                    category = viewModel.category.value,
-                                    type = viewModel.type.value
-                                )
-                                navController.popBackStack()
+                                viewModel.category.value = selection
+                                categoryExpanded = false
                             }
-                        ) { Text("Save") }
-
-                        Button(
-                            onClick = {
-                                viewModel.deleteTransaction(trans.id)
-                                navController.popBackStack()
-                            }
-                        ) { Text("Delete") }
+                        )
                     }
+                }
+            }
+            ExposedDropdownMenuBox(
+                expanded = typeExpanded,
+                onExpandedChange = { typeExpanded = !typeExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = viewModel.type.value,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Type") },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF1B213F),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                    ),
+                    modifier = Modifier
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = typeExpanded,
+                    onDismissRequest = { typeExpanded = false }
+                ) {
+                    typeOptions.forEach { selection ->
+                        DropdownMenuItem(
+                            text = { Text(selection) },
+                            onClick = {
+                                viewModel.type.value = selection
+                                typeExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Button(
+                        onClick = {
+                            viewModel.updateTransaction(
+                                id = transaction.id,
+                                title = viewModel.title.value,
+                                date = viewModel.date.value,
+                                amount = viewModel.amount.value.toDoubleOrNull() ?: 0.0,
+                                category = viewModel.category.value,
+                                type = viewModel.type.value
+                            )
+                            navController.popBackStack()
+                        }
+                    ) { Text("Save") }
+
+                    Button(
+                        onClick = {
+                            viewModel.deleteTransaction(transaction.id)
+                            navController.popBackStack()
+                        }
+                    ) { Text("Delete") }
                 }
             }
         }
     }
+
 }
+
+
