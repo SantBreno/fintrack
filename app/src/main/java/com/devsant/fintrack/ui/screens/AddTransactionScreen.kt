@@ -49,6 +49,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
+import com.devsant.fintrack.data.AppDatabase
+import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 import java.util.Calendar
 import java.util.Locale
@@ -332,5 +335,16 @@ fun DatePickerField(
 @Composable
 fun AddTransactionScreenPreview() {
     val navController = rememberNavController()
-    AddTransactionScreen(navController = navController)
+    // Create an in-memory database for preview purposes
+    val context = LocalContext.current
+    val database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+        .allowMainThreadQueries()
+        .build()
+
+    FintrackTheme {
+        AddTransactionScreen(
+            navController = navController,
+            viewModel = TransactionViewModel(database)
+        )
+    }
 }
