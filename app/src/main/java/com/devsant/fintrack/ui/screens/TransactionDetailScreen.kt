@@ -1,7 +1,6 @@
 package com.devsant.fintrack.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,15 +12,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -32,8 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
@@ -58,7 +58,26 @@ fun TransactionDetailScreen(
         TransactionDetailScreenContent(
             transaction = trans,
             navController = navController,
-            viewModel = viewModel
+            title = viewModel.title,
+            date = viewModel.date,
+            amount = viewModel.amount,
+            category = viewModel.category,
+            type = viewModel.type,
+            onSave = {
+                viewModel.updateTransaction(
+                    id = trans.id,
+                    title = viewModel.title.value,
+                    date = viewModel.date.value,
+                    amount = viewModel.amount.value.toDoubleOrNull() ?: 0.0,
+                    category = viewModel.category.value,
+                    type = viewModel.type.value
+                )
+                navController.popBackStack()
+            },
+            onDelete = {
+                viewModel.deleteTransaction(trans.id)
+                navController.popBackStack()
+            }
         )
     }
 }
@@ -69,23 +88,27 @@ fun TransactionDetailScreen(
 fun TransactionDetailScreenContent(
     transaction: Transaction,
     navController: NavHostController,
-    viewModel: TransactionViewModel
+    title: MutableState<String>,
+    date: MutableState<String>,
+    amount: MutableState<String>,
+    category: MutableState<String>,
+    type: MutableState<String>,
+    onSave: () -> Unit,
+    onDelete: () -> Unit
 ) {
-
     val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
     val typeOptions = listOf("Expense", "Income")
 
     var categoryExpanded by remember { mutableStateOf(false) }
     var typeExpanded by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text("Transaction Details", color = Color.White, fontWeight = FontWeight.Bold)
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1B213F)
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1B213F))
             )
         }
     ) { innerPadding ->
@@ -95,57 +118,39 @@ fun TransactionDetailScreenContent(
                 .padding(16.dp)
         ) {
             OutlinedTextField(
-                value = viewModel.title.value,
-                onValueChange = { viewModel.title.value = it },
+                value = title.value,
+                onValueChange = { title.value = it },
                 label = { Text("Title") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF1B213F),
-                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                )
+                modifier = Modifier.fillMaxWidth()
             )
+
             OutlinedTextField(
-                value = viewModel.date.value,
-                onValueChange = { viewModel.date.value = it },
+                value = date.value,
+                onValueChange = { date.value = it },
                 label = { Text("Date") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF1B213F),
-                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                )
+                modifier = Modifier.fillMaxWidth()
             )
+
             OutlinedTextField(
-                value = viewModel.amount.value,
-                onValueChange = { viewModel.amount.value = it },
+                value = amount.value,
+                onValueChange = { amount.value = it },
                 label = { Text("Amount") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF1B213F),
-                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                ),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
             )
+
             ExposedDropdownMenuBox(
                 expanded = categoryExpanded,
-                onExpandedChange = { categoryExpanded = !categoryExpanded },
-                modifier = Modifier.fillMaxWidth()
+                onExpandedChange = { categoryExpanded = !categoryExpanded }
             ) {
                 OutlinedTextField(
-                    value = viewModel.category.value,
+                    value = category.value,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Category") },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF1B213F),
-                        unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                    ),
                     modifier = Modifier
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .fillMaxWidth()
@@ -158,28 +163,23 @@ fun TransactionDetailScreenContent(
                         DropdownMenuItem(
                             text = { Text(selection) },
                             onClick = {
-                                viewModel.category.value = selection
+                                category.value = selection
                                 categoryExpanded = false
                             }
                         )
                     }
                 }
             }
+
             ExposedDropdownMenuBox(
                 expanded = typeExpanded,
-                onExpandedChange = { typeExpanded = !typeExpanded },
-                modifier = Modifier.fillMaxWidth()
+                onExpandedChange = { typeExpanded = !typeExpanded }
             ) {
                 OutlinedTextField(
-                    value = viewModel.type.value,
+                    value = type.value,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Type") },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF1B213F),
-                        unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                    ),
                     modifier = Modifier
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .fillMaxWidth()
@@ -192,7 +192,7 @@ fun TransactionDetailScreenContent(
                         DropdownMenuItem(
                             text = { Text(selection) },
                             onClick = {
-                                viewModel.type.value = selection
+                                type.value = selection
                                 typeExpanded = false
                             }
                         )
@@ -200,44 +200,51 @@ fun TransactionDetailScreenContent(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Button(
-                        onClick = {
-                            viewModel.updateTransaction(
-                                id = transaction.id,
-                                title = viewModel.title.value,
-                                date = viewModel.date.value,
-                                amount = viewModel.amount.value.toDoubleOrNull() ?: 0.0,
-                                category = viewModel.category.value,
-                                type = viewModel.type.value
-                            )
-                            navController.popBackStack()
-                        }
-                    ) { Text("Save") }
-
-                    Button(
-                        onClick = {
-                            viewModel.deleteTransaction(transaction.id)
-                            navController.popBackStack()
-                        }
-                    ) { Text("Delete") }
-                }
+                Button(onClick = onSave) { Text("Save") }
+                Button(onClick = onDelete) { Text("Delete") }
             }
         }
     }
+}
 
+
+@Preview(showBackground = true)
+@Composable
+fun TransactionDetailScreenPreview() {
+    val transaction = Transaction(
+        id = 1,
+        title = "Groceries",
+        amount = 150.00,
+        date = "19/05/2025",
+        category = "Food",
+        type = "Expense"
+    )
+
+    val title = remember { mutableStateOf(transaction.title) }
+    val date = remember { mutableStateOf(transaction.date) }
+    val amount = remember { mutableStateOf(transaction.amount.toString()) }
+    val category = remember { mutableStateOf(transaction.category) }
+    val type = remember { mutableStateOf(transaction.type) }
+    val navController = rememberNavController()
+
+    TransactionDetailScreenContent(
+        transaction = transaction,
+        navController = navController,
+        title = title,
+        date = date,
+        amount = amount,
+        category = category,
+        type = type,
+        onSave = {},
+        onDelete = {}
+    )
 }
 
 
