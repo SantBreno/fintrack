@@ -21,6 +21,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,13 +30,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.CurvedTopBackground
 import com.devsant.fintrack.ui.components.FilteredTransactionList
+import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 import kotlinx.coroutines.launch
 
@@ -47,9 +51,10 @@ fun ExpenseDetailScreen(
 ) {
     val transactionList by viewModel.transactionList.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    var totalExpense by remember { mutableStateOf(0.0) }
+    var totalExpense by remember { mutableDoubleStateOf(0.0) }
 
     LaunchedEffect(Unit) {
+
         coroutineScope.launch {
             totalExpense = viewModel.totalExpense()
         }
@@ -158,6 +163,21 @@ fun ExpenseScreenContent(
 
     }
 }
+@Preview(showBackground = true)
+@Composable
+fun ExpenseScreenContentPreview() {
+    val mockTransactions = listOf(
+        Transaction(1, "Salary", "01/07/2023", 20000.0, "Income", "Income"),
+        Transaction(2, "Rent", "05/07/2023", 5000.0, "Housing", "Expense"),
+        Transaction(3, "Groceries", "10/07/2023", 2500.0, "Food", "Expense")
+    )
 
-
-
+    FintrackTheme {
+        ExpenseScreenContent(
+            transactionList = mockTransactions,
+            totalExpense = 12500.0,
+            navController = rememberNavController(),
+            onTransactionClick = {}
+        )
+    }
+}
