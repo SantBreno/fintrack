@@ -1,6 +1,5 @@
 package com.devsant.fintrack.ui.screens
 
-import android.app.DatePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,10 +48,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.devsant.fintrack.data.AppDatabase
+import com.devsant.fintrack.ui.components.DatePickerField
 import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
-import java.util.Calendar
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,12 +67,11 @@ fun AddTransactionScreen(
     var categoryExpanded by remember { mutableStateOf(false) }
     var typeExpanded by remember { mutableStateOf(false) }
 
-//
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("FinTrack", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("Add Transaction", color = Color.White, fontWeight = FontWeight.Bold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF1B213F)
@@ -84,22 +79,29 @@ fun AddTransactionScreen(
             )
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding))
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
 
+            Text(
+                "Let's create a new Transaction",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1B213F)
+                ),
+                fontSize = 25.sp
+            )
 
-        Text("Add Transaction",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, color = Color(0xFF1B213F)),
-            fontSize = 40.sp
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Create a transaction by filling in the details below.",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color(0xFF1B213F)
+                ),
+                fontSize = 15.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(value = viewModel.title.value,
             onValueChange = { viewModel.title.value = it },
@@ -114,131 +116,133 @@ fun AddTransactionScreen(
         )
 
 
-        DateInputField(
-            value = viewModel.date.value,
-            onClick = { showDatePicker = true }
-        )
+            DateInputField(
+                value = viewModel.date.value,
+                onClick = { showDatePicker = true }
+            )
 
 
-        DatePickerField(
-            showDialog = showDatePicker,
-            onDismiss = { showDatePicker = false },
-            onDateSelected = {
-                viewModel.date.value = it
-                showDatePicker = false
-            }
-        )
+            DatePickerField(
+                showDialog = showDatePicker,
+                onDismiss = { showDatePicker = false },
+                onDateSelected = {
+                    viewModel.date.value = it
+                    showDatePicker = false
+                }
+            )
 
 
-        OutlinedTextField(value = viewModel.amount.value,
-            onValueChange = { viewModel.amount.value = it },
-            label = { Text("Amount") },
-            singleLine = true,
-            shape = MaterialTheme.shapes.medium,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF1B213F),
-                unfocusedBorderColor = Color(0xFF1B213F),
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        ExposedDropdownMenuBox(
-            expanded = categoryExpanded,
-            onExpandedChange = { categoryExpanded = !categoryExpanded },
-            modifier = Modifier.fillMaxWidth()
-        ) {
             OutlinedTextField(
-                value = viewModel.category.value,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Category") },
+                value = viewModel.amount.value,
+                onValueChange = { viewModel.amount.value = it },
+                label = { Text("Amount") },
+                singleLine = true,
                 shape = MaterialTheme.shapes.medium,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color(0xFF1B213F),
                     unfocusedBorderColor = Color(0xFF1B213F),
                 ),
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
-                modifier = Modifier
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                    .fillMaxWidth()
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
             )
-            ExposedDropdownMenu(
+
+            ExposedDropdownMenuBox(
                 expanded = categoryExpanded,
-                onDismissRequest = { categoryExpanded = false }
+                onExpandedChange = { categoryExpanded = !categoryExpanded },
+                modifier = Modifier.fillMaxWidth()
             ) {
-                categoryOptions.forEach { selection ->
-                    DropdownMenuItem(
-                        text = { Text(selection) },
-                        onClick = {
-                            viewModel.category.value = selection
-                            categoryExpanded = false
-                        }
-                    )
-                }
-            }
-        }
-
-        ExposedDropdownMenuBox(
-            expanded = typeExpanded,
-            onExpandedChange = { typeExpanded = !typeExpanded },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = viewModel.type.value,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Type") },
-                shape = MaterialTheme.shapes.medium,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF1B213F),
-                    unfocusedBorderColor = Color(0xFF1B213F),
-                ),
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                modifier = Modifier
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                    .fillMaxWidth()
-            )
-            ExposedDropdownMenu(
-                expanded = typeExpanded,
-                onDismissRequest = { typeExpanded = false }
-            ) {
-                typeOptions.forEach { selection ->
-                    DropdownMenuItem(
-                        text = { Text(selection) },
-                        onClick = {
-                            viewModel.type.value = selection
-                            typeExpanded = false
-                        }
-                    )
-                }
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .padding(16.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Row(
-                modifier = Modifier
-                    .height(70.dp)
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Button(
-                    onClick = {
-                        viewModel.addTransaction()
-                        navController.navigate("home")
-                    },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B213F))
+                OutlinedTextField(
+                    value = viewModel.category.value,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Category") },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF1B213F),
+                        unfocusedBorderColor = Color(0xFF1B213F),
+                    ),
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                    modifier = Modifier
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = categoryExpanded,
+                    onDismissRequest = { categoryExpanded = false }
                 ) {
-                    Text("Add Transaction")
+                    categoryOptions.forEach { selection ->
+                        DropdownMenuItem(
+                            text = { Text(selection) },
+                            onClick = {
+                                viewModel.category.value = selection
+                                categoryExpanded = false
+                            }
+                        )
+                    }
                 }
             }
 
+            ExposedDropdownMenuBox(
+                expanded = typeExpanded,
+                onExpandedChange = { typeExpanded = !typeExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = viewModel.type.value,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Type") },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF1B213F),
+                        unfocusedBorderColor = Color(0xFF1B213F),
+                    ),
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
+                    modifier = Modifier
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = typeExpanded,
+                    onDismissRequest = { typeExpanded = false }
+                ) {
+                    typeOptions.forEach { selection ->
+                        DropdownMenuItem(
+                            text = { Text(selection) },
+                            onClick = {
+                                viewModel.type.value = selection
+                                typeExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .height(70.dp)
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.addTransaction()
+                            navController.navigate("home")
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B213F))
+                    ) {
+                        Text("Add Transaction")
+                    }
+                }
+
+            }
         }
     }
 }
@@ -288,48 +292,6 @@ fun DateInputField(
         )
     )
 }
-
-
-@Composable
-fun DatePickerField(
-    showDialog: Boolean,
-    onDismiss: () -> Unit,
-    onDateSelected: (String) -> Unit
-
-
-) {
-    val context = LocalContext.current
-
-    if (showDialog) {
-        DisposableEffect(Unit) {
-            val calendar = Calendar.getInstance()
-
-            val datePickerDialog = DatePickerDialog(
-                context,
-                { _, year, month, day ->
-                    val formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", day, month + 1, year)
-                    onDateSelected(formattedDate)
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-
-            datePickerDialog.setOnDismissListener { onDismiss()
-            }
-
-            datePickerDialog.show()
-
-            onDispose {
-                datePickerDialog.setOnDismissListener(null)
-            }
-        }
-    }
-
-}
-
-
-
 
 @Preview(showBackground = true)
 @Composable

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
+import com.devsant.fintrack.ui.components.DatePickerField
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,6 +97,8 @@ fun TransactionDetailScreenContent(
     onSave: () -> Unit,
     onDelete: () -> Unit
 ) {
+
+    var showDatePicker by remember { mutableStateOf(false) }
     val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
     val typeOptions = listOf("Expense", "Income")
 
@@ -125,12 +128,19 @@ fun TransactionDetailScreenContent(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
+            DateInputField(
                 value = date.value,
-                onValueChange = { date.value = it },
-                label = { Text("Date") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                onClick = { showDatePicker = true }
+            )
+
+
+            DatePickerField(
+                showDialog = showDatePicker,
+                onDismiss = { showDatePicker = false },
+                onDateSelected = {
+                    date.value = it
+                    showDatePicker = false
+                }
             )
 
             OutlinedTextField(
