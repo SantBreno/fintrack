@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -22,10 +24,10 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -39,7 +41,6 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -103,120 +104,193 @@ fun AddTransactionScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(value = viewModel.title.value,
-            onValueChange = { viewModel.title.value = it },
-            label = { Text("Title") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF1B213F),
-                unfocusedBorderColor = Color(0xFF1B213F),
-            )
-        )
+
+            Card(
+                modifier = Modifier,
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            ) {
+                TextField(
+                    value = viewModel.title.value,
+                    onValueChange = { viewModel.title.value = it },
+                    label = { Text("Title") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
 
-            DateInputField(
-                value = viewModel.date.value,
-                onClick = { showDatePicker = true }
-            )
+            Card(
+                modifier = Modifier,
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            ) {
+                DateInputField(
+                    value = viewModel.date.value,
+                    onClick = { showDatePicker = true }
+                )
+
+                DatePickerField(
+                    showDialog = showDatePicker,
+                    onDismiss = { showDatePicker = false },
+                    onDateSelected = {
+                        viewModel.date.value = it
+                        showDatePicker = false
+                    }
+                )
+            }
 
 
-            DatePickerField(
-                showDialog = showDatePicker,
-                onDismiss = { showDatePicker = false },
-                onDateSelected = {
-                    viewModel.date.value = it
-                    showDatePicker = false
-                }
-            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
 
-            OutlinedTextField(
-                value = viewModel.amount.value,
-                onValueChange = { viewModel.amount.value = it },
-                label = { Text("Amount") },
-                singleLine = true,
-                shape = MaterialTheme.shapes.medium,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF1B213F),
-                    unfocusedBorderColor = Color(0xFF1B213F),
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Card(
+                modifier = Modifier,
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            ) {
+                TextField(
+                    value = viewModel.amount.value,
+                    onValueChange = { viewModel.amount.value = it },
+                    label = { Text("Amount") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             ExposedDropdownMenuBox(
                 expanded = categoryExpanded,
                 onExpandedChange = { categoryExpanded = !categoryExpanded },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                OutlinedTextField(
-                    value = viewModel.category.value,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Category") },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF1B213F),
-                        unfocusedBorderColor = Color(0xFF1B213F),
-                    ),
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
-                    modifier = Modifier
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = categoryExpanded,
-                    onDismissRequest = { categoryExpanded = false }
+
+                Card(
+                    modifier = Modifier,
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 ) {
-                    categoryOptions.forEach { selection ->
-                        DropdownMenuItem(
-                            text = { Text(selection) },
-                            onClick = {
-                                viewModel.category.value = selection
-                                categoryExpanded = false
-                            }
-                        )
+                    TextField(
+                        value = viewModel.category.value,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Category") },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                        modifier = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = categoryExpanded,
+                        onDismissRequest = { categoryExpanded = false }
+                    ) {
+                        categoryOptions.forEach { selection ->
+                            DropdownMenuItem(
+                                text = { Text(selection) },
+                                onClick = {
+                                    viewModel.category.value = selection
+                                    categoryExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
+
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             ExposedDropdownMenuBox(
                 expanded = typeExpanded,
                 onExpandedChange = { typeExpanded = !typeExpanded },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                OutlinedTextField(
-                    value = viewModel.type.value,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Type") },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF1B213F),
-                        unfocusedBorderColor = Color(0xFF1B213F),
-                    ),
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                    modifier = Modifier
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = typeExpanded,
-                    onDismissRequest = { typeExpanded = false }
+
+                Card(
+                    modifier = Modifier,
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 ) {
-                    typeOptions.forEach { selection ->
-                        DropdownMenuItem(
-                            text = { Text(selection) },
-                            onClick = {
-                                viewModel.type.value = selection
-                                typeExpanded = false
-                            }
-                        )
+                    TextField(
+                        value = viewModel.type.value,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Type") },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
+                        modifier = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = typeExpanded,
+                        onDismissRequest = { typeExpanded = false }
+                    ) {
+                        typeOptions.forEach { selection ->
+                            DropdownMenuItem(
+                                text = { Text(selection) },
+                                onClick = {
+                                    viewModel.type.value = selection
+                                    typeExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
+
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Box(
                 modifier = Modifier
@@ -255,12 +329,12 @@ fun DateInputField(
     label: String = "Date"
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    OutlinedTextField(
+    TextField(
         value = value,
         onValueChange = {},
         readOnly = true,
         label = { Text(label) },
-        shape = MaterialTheme.shapes.medium,
+        shape = RoundedCornerShape(12.dp),
         trailingIcon = {
             Icon(
                 imageVector = Icons.Default.DateRange,
@@ -278,17 +352,11 @@ fun DateInputField(
                 onClick()
             },
         enabled = false,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFF1B213F),
-            unfocusedBorderColor = Color(0xFF1B213F),
-            disabledBorderColor = Color(0xFF1B213F),
-            focusedLabelColor = MaterialTheme.colorScheme.primary,
-            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        colors = TextFieldDefaults.colors(
             disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            cursorColor = MaterialTheme.colorScheme.primary,
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-            disabledTextColor = MaterialTheme.colorScheme.onSurface
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
         )
     )
 }
