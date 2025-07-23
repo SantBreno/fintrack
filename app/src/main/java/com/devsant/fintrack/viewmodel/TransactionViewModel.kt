@@ -1,13 +1,16 @@
 package com.devsant.fintrack.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devsant.fintrack.data.AppDatabase
 import com.devsant.fintrack.model.Transaction
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TransactionViewModel(private val database: AppDatabase) : ViewModel() {
     private val _transactionList = MutableStateFlow<List<Transaction>>(emptyList())
@@ -55,8 +58,28 @@ class TransactionViewModel(private val database: AppDatabase) : ViewModel() {
         type: String
     ) {
         viewModelScope.launch {
-            val transaction = Transaction(id, title, date, amount, category, type)
-            database.transactionDao().updateTransaction(transaction)
+            try {
+                val updatedTransaction = Transaction(
+                    id = id,
+                    title = title,
+                    date = date,
+                    amount = amount,
+                    category = category,
+                    type = type
+                )
+
+                database.transactionDao().updateTransaction(updatedTransaction)
+
+                withContext(Dispatchers.Main) {
+                    this@TransactionViewModel.title.value = ""
+                    this@TransactionViewModel.date.value = ""
+                    this@TransactionViewModel.amount.value = ""
+                    this@TransactionViewModel.category.value = ""
+                    this@TransactionViewModel.type.value = ""
+                }
+            } catch (e: Exception) {
+                Log.e("TransactionViewModel", "Error updating transaction", e)
+            }
         }
     }
 

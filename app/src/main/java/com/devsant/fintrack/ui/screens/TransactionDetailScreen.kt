@@ -1,21 +1,33 @@
 package com.devsant.fintrack.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -29,12 +41,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
+import com.devsant.fintrack.ui.components.DateInputField
+import com.devsant.fintrack.ui.components.DatePickerField
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,6 +110,8 @@ fun TransactionDetailScreenContent(
     onSave: () -> Unit,
     onDelete: () -> Unit
 ) {
+
+    var showDatePicker by remember { mutableStateOf(false) }
     val categoryOptions = listOf("Food", "Transport", "Entertainment", "Utilities", "Health", "Shopping", "Other")
     val typeOptions = listOf("Expense", "Income")
 
@@ -115,101 +131,279 @@ fun TransactionDetailScreenContent(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
-        ) {
-            OutlinedTextField(
-                value = title.value,
-                onValueChange = { title.value = it },
-                label = { Text("Title") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = date.value,
-                onValueChange = { date.value = it },
-                label = { Text("Date") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = amount.value,
-                onValueChange = { amount.value = it },
-                label = { Text("Amount") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-            )
-
-            ExposedDropdownMenuBox(
-                expanded = categoryExpanded,
-                onExpandedChange = { categoryExpanded = !categoryExpanded }
+        ){
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 5.dp)
+                    .height(120.dp)
+                    .width(200.dp),
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1B213F)),
             ) {
-                OutlinedTextField(
-                    value = category.value,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Category") },
-                    modifier = Modifier
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column (
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .weight(1f)
+                    ){
+                        Text(
+                            text = transaction.title,
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White
+                        )
+                        Text(
+                            text = (if (transaction.type == "Expense") "- " else "+ ") + "R$ ${transaction.amount}",
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, fontSize = 30.sp),
+                            color = if (transaction.type == "Expense") Color(0xFFFF6B5B) else Color(0xFF56B25C)
+                        )
+                        Text(
+                            text = transaction.category,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ){
+                        Box(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .background(
+                                    color = if(transaction.type == "Income") Color(0xFF56B25C) else Color(0xFFFF6B5B) ,
+                                    shape = CircleShape
+                                )
+                                .border(width = 2.dp, color = Color.White, shape = CircleShape)
+                            ,
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = transaction.category.firstOrNull()?.uppercase() ?: "?",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = transaction.date,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.LightGray
+                        )
+                    }
+
+                }
+
+            }
+
+
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Card(
+                    modifier = Modifier,
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                ) {
+                    TextField(
+                        value = title.value,
+                        onValueChange = { title.value = it },
+                        label = { Text("Title") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Card(
+                    modifier = Modifier,
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                ) {
+                    DateInputField(
+                        value = date.value,
+                        onClick = { showDatePicker = true }
+                    )
+
+                    DatePickerField(
+                        showDialog = showDatePicker,
+                        onDismiss = { showDatePicker = false },
+                        onDateSelected = {
+                            date.value = it
+                            showDatePicker = false
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Card(
+                    modifier = Modifier,
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                ) {
+                    TextField(
+                        value = amount.value,
+                        onValueChange = { amount.value = it },
+                        label = { Text("Amount") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ExposedDropdownMenuBox(
                     expanded = categoryExpanded,
-                    onDismissRequest = { categoryExpanded = false }
+                    onExpandedChange = { categoryExpanded = !categoryExpanded },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    categoryOptions.forEach { selection ->
-                        DropdownMenuItem(
-                            text = { Text(selection) },
-                            onClick = {
-                                category.value = selection
-                                categoryExpanded = false
-                            }
+
+                    Card(
+                        modifier = Modifier,
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp,
+                            pressedElevation = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    ) {
+                        TextField(
+                            value = category.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Category") },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            ),
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                            modifier = Modifier
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                                .fillMaxWidth()
                         )
+                        ExposedDropdownMenu(
+                            expanded = categoryExpanded,
+                            onDismissRequest = { categoryExpanded = false }
+                        ) {
+                            categoryOptions.forEach { selection ->
+                                DropdownMenuItem(
+                                    text = { Text(selection) },
+                                    onClick = {
+                                        category.value = selection
+                                        categoryExpanded = false
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
-            }
 
-            ExposedDropdownMenuBox(
-                expanded = typeExpanded,
-                onExpandedChange = { typeExpanded = !typeExpanded }
-            ) {
-                OutlinedTextField(
-                    value = type.value,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Type") },
-                    modifier = Modifier
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ExposedDropdownMenuBox(
                     expanded = typeExpanded,
-                    onDismissRequest = { typeExpanded = false }
+                    onExpandedChange = { typeExpanded = !typeExpanded },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    typeOptions.forEach { selection ->
-                        DropdownMenuItem(
-                            text = { Text(selection) },
-                            onClick = {
-                                type.value = selection
-                                typeExpanded = false
-                            }
+                    Card(
+                        modifier = Modifier,
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp,
+                            pressedElevation = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    ) {
+                        TextField(
+                            value = type.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Type") },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            ),
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
+                            modifier = Modifier
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                                .fillMaxWidth()
                         )
+                        ExposedDropdownMenu(
+                            expanded = typeExpanded,
+                            onDismissRequest = { typeExpanded = false }
+                        ) {
+                            typeOptions.forEach { selection ->
+                                DropdownMenuItem(
+                                    text = { Text(selection) },
+                                    onClick = {
+                                        type.value = selection
+                                        typeExpanded = false
+                                    }
+                                )
+                            }
+                        }
                     }
+
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = onSave, elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF1B213F))
+                    ) { Text("Save") }
+                    Button(onClick = onDelete,
+                        colors = ButtonDefaults.buttonColors(Color(0xFFFF6B5B))
+                    ) { Text("Delete") }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(onClick = onSave) { Text("Save") }
-                Button(onClick = onDelete) { Text("Delete") }
-            }
         }
     }
 }
