@@ -1,5 +1,6 @@
 package com.devsant.fintrack.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,7 +81,7 @@ fun AddTransactionScreen(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 "Let's create a new Transaction",
                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -97,7 +98,7 @@ fun AddTransactionScreen(
                 ),
                 fontSize = 15.sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(56.dp))
 
 
             Card(
@@ -293,24 +294,31 @@ fun AddTransactionScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 Row(
-                    modifier = Modifier
-                        .height(70.dp)
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(
+                        modifier = Modifier.height(50.dp),
                         onClick = {
-                            viewModel.addTransaction()
                             navController.navigate("home")
                         },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B213F))
-                    ) {
-                        Text("Add Transaction")
-                    }
-                }
+                        colors = ButtonDefaults.buttonColors(Color.Transparent),
+                        border = BorderStroke(2.dp, Color(0xFFFF6B5B))
+                    ) { Text("Cancel", color = Color(0xFF1B213F)) }
 
+                    Button(
+                        modifier = Modifier.height(50.dp),
+                        onClick = {
+                        viewModel.addTransaction()
+                        navController.navigate("home")
+                        },
+                        elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF56B25C))
+                    ) { Text("Add") }
+                }
             }
         }
     }
