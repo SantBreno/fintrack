@@ -159,7 +159,7 @@ fun TransactionDetailScreenContent(
                         Text(
                             text = (if (transaction.type == "Expense") "- " else "+ ") + "R$ ${transaction.amount}",
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, fontSize = 30.sp),
-                            color = if (transaction.type == "Expense") Color.Red else Color(0xFF56B25C)
+                            color = if (transaction.type == "Expense") Color(0xFFFF6B5B) else Color(0xFF56B25C)
                         )
                         Text(
                             text = transaction.category,
@@ -179,7 +179,7 @@ fun TransactionDetailScreenContent(
                             modifier = Modifier
                                 .size(60.dp)
                                 .background(
-                                    color = if(transaction.type == "Income") Color(0xFF56B25C) else Color.Red,
+                                    color = if(transaction.type == "Income") Color(0xFF56B25C) else Color(0xFFFF6B5B) ,
                                     shape = CircleShape
                                 )
                                 .border(width = 2.dp, color = Color.White, shape = CircleShape)
@@ -394,9 +394,12 @@ fun TransactionDetailScreenContent(
                 ) {
                     Button(onClick = onSave, elevation = ButtonDefaults.buttonElevation(
                         defaultElevation = 4.dp,
-                        pressedElevation = 8.dp)
+                        pressedElevation = 8.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF1B213F))
                     ) { Text("Save") }
-                    Button(onClick = onDelete) { Text("Delete") }
+                    Button(onClick = onDelete,
+                        colors = ButtonDefaults.buttonColors(Color(0xFFFF6B5B))
+                    ) { Text("Delete") }
                 }
             }
 
