@@ -46,6 +46,7 @@ import androidx.room.Room
 import com.devsant.fintrack.data.AppDatabase
 import com.devsant.fintrack.ui.components.DateInputField
 import com.devsant.fintrack.ui.components.DatePickerField
+import com.devsant.fintrack.ui.theme.AppColors
 import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
@@ -71,7 +72,7 @@ fun AddTransactionScreen(
                     Text("Add Transaction", color = Color.White, fontWeight = FontWeight.Bold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1B213F)
+                    containerColor = AppColors.Primary
                 )
             )
         }
@@ -86,7 +87,7 @@ fun AddTransactionScreen(
                 "Let's create a new Transaction",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1B213F)
+                    color = AppColors.Primary
                 ),
                 fontSize = 25.sp
             )
@@ -94,7 +95,7 @@ fun AddTransactionScreen(
             Text(
                 "Create a transaction by filling in the details below.",
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color(0xFF1B213F)
+                    color = AppColors.Primary
                 ),
                 fontSize = 15.sp
             )
@@ -304,8 +305,8 @@ fun AddTransactionScreen(
                             navController.navigate("home")
                         },
                         colors = ButtonDefaults.buttonColors(Color.Transparent),
-                        border = BorderStroke(2.dp, Color(0xFFFF6B5B))
-                    ) { Text("Cancel", color = Color(0xFF1B213F)) }
+                        border = BorderStroke(2.dp, AppColors.ExpenseRed)
+                    ) { Text("Cancel", color = AppColors.Primary) }
 
                     Button(
                         modifier = Modifier.height(50.dp),
@@ -316,7 +317,7 @@ fun AddTransactionScreen(
                         elevation = ButtonDefaults.buttonElevation(
                         defaultElevation = 4.dp,
                         pressedElevation = 8.dp),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF56B25C))
+                        colors = ButtonDefaults.buttonColors(AppColors.IncomeGreen)
                     ) { Text("Add") }
                 }
             }

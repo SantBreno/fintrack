@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.devsant.fintrack.model.Transaction
+import com.devsant.fintrack.ui.theme.AppColors
 
 @Composable
 fun TransactionCard(
@@ -78,7 +79,7 @@ fun TransactionCard(
             Text(
                 text = (if (transaction.type == "Expense") "- " else "+ ") + "R$ ${transaction.amount}",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = if (transaction.type == "Expense") Color.Red else Color(0xFF56B25C)
+                color = if (transaction.type == "Expense") AppColors.ExpenseRed else AppColors.IncomeGreen
             )
         }
 

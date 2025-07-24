@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.devsant.fintrack.ui.theme.AppColors
 
 @Composable
 fun DateInputField(
@@ -36,7 +37,7 @@ fun DateInputField(
             Icon(
                 imageVector = Icons.Default.DateRange,
                 contentDescription = "Date Picker",
-                tint = Color(0xFF1B213F)
+                tint = AppColors.Primary
             )
         },
         modifier = Modifier

@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.DateInputField
 import com.devsant.fintrack.ui.components.DatePickerField
+import com.devsant.fintrack.ui.theme.AppColors
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,7 +125,7 @@ fun TransactionDetailScreenContent(
                 title = {
                     Text("Transaction Details", color = Color.White, fontWeight = FontWeight.Bold)
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1B213F))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = AppColors.Primary)
             )
         }
     ) { innerPadding ->
@@ -140,7 +141,7 @@ fun TransactionDetailScreenContent(
                     .width(200.dp),
                 shape = RoundedCornerShape(12.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1B213F)),
+                colors = CardDefaults.cardColors(containerColor = AppColors.Primary),
             ) {
                 Row(
                     modifier = Modifier,
@@ -159,7 +160,7 @@ fun TransactionDetailScreenContent(
                         Text(
                             text = (if (transaction.type == "Expense") "- " else "+ ") + "R$ ${transaction.amount}",
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, fontSize = 30.sp),
-                            color = if (transaction.type == "Expense") Color(0xFFFF6B5B) else Color(0xFF56B25C)
+                            color = if (transaction.type == "Expense") AppColors.ExpenseRed else AppColors.IncomeGreen
                         )
                         Text(
                             text = transaction.category,
@@ -179,7 +180,7 @@ fun TransactionDetailScreenContent(
                             modifier = Modifier
                                 .size(60.dp)
                                 .background(
-                                    color = if(transaction.type == "Income") Color(0xFF56B25C) else Color(0xFFFF6B5B) ,
+                                    color = if(transaction.type == "Income") AppColors.IncomeGreen else AppColors.ExpenseRed ,
                                     shape = CircleShape
                                 )
                                 .border(width = 2.dp, color = Color.White, shape = CircleShape)
@@ -395,10 +396,10 @@ fun TransactionDetailScreenContent(
                     Button(onClick = onSave, elevation = ButtonDefaults.buttonElevation(
                         defaultElevation = 4.dp,
                         pressedElevation = 8.dp),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF1B213F))
+                        colors = ButtonDefaults.buttonColors(AppColors.Primary)
                     ) { Text("Save") }
                     Button(onClick = onDelete,
-                        colors = ButtonDefaults.buttonColors(Color(0xFFFF6B5B))
+                        colors = ButtonDefaults.buttonColors(AppColors.ExpenseRed)
                     ) { Text("Delete") }
                 }
             }
