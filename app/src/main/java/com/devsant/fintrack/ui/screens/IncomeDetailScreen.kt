@@ -39,6 +39,7 @@ import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.CurvedTopBackground
 import com.devsant.fintrack.ui.components.FilteredTransactionList
+import com.devsant.fintrack.ui.theme.AppColors
 import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 import kotlinx.coroutines.launch
@@ -91,7 +92,7 @@ fun IncomeScreenContent(
                     Text("Income Details", color = Color.White, fontWeight = FontWeight.Bold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF56B25C)
+                    containerColor = AppColors.IncomeGreen
                 )
             )
         }
@@ -111,7 +112,7 @@ fun IncomeScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
-                    color = Color(0xFF56B25C)
+                    color = AppColors.IncomeGreen
                 )
 
                 Card(
@@ -123,7 +124,7 @@ fun IncomeScreenContent(
                     shape = RoundedCornerShape(15.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(3.dp, color = Color(0xFF56B25C))
+                    border = BorderStroke(3.dp, color = AppColors.IncomeGreen)
                 ) {
                     Column(
                         modifier = Modifier
@@ -135,7 +136,7 @@ fun IncomeScreenContent(
                         Text(
                             "R$%.2f".format(totalIncome),
                             style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFF56B25C)
+                            color = AppColors.IncomeGreen
                         )
                     }
                 }
@@ -148,7 +149,7 @@ fun IncomeScreenContent(
                 categories = categories,
                 selectedCategory = selectedCategory,
                 onCategorySelected = { selectedCategory = it},
-                borderColor = Color(0xFF56B25C)
+                borderColor = AppColors.IncomeGreen
             )
 
             FilteredTransactionList(

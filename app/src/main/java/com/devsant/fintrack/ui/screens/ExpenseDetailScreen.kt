@@ -39,6 +39,7 @@ import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.CurvedTopBackground
 import com.devsant.fintrack.ui.components.FilteredTransactionList
+import com.devsant.fintrack.ui.theme.AppColors
 import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 import kotlinx.coroutines.launch
@@ -92,7 +93,7 @@ fun ExpenseScreenContent(
                     Text("Expense Details", color = Color.White, fontWeight = FontWeight.Bold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFFF6B5B)
+                    containerColor = AppColors.ExpenseRed
                 )
             )
         }
@@ -112,7 +113,7 @@ fun ExpenseScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
-                    color = Color(0xFFFF6B5B)
+                    color = AppColors.ExpenseRed
                 )
 
                 Card(
@@ -124,7 +125,7 @@ fun ExpenseScreenContent(
                     shape = RoundedCornerShape(15.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(3.dp, color = Color(0xFFFF6B5B))
+                    border = BorderStroke(3.dp, color = AppColors.ExpenseRed)
                 ) {
                     Column(
                         modifier = Modifier
@@ -136,7 +137,7 @@ fun ExpenseScreenContent(
                         Text(
                             "R$%.2f".format(totalExpense),
                             style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFFFF6B5B)
+                            color = AppColors.ExpenseRed
                         )
                     }
                 }
@@ -149,7 +150,7 @@ fun ExpenseScreenContent(
                 categories = categories,
                 selectedCategory = selectedCategory,
                 onCategorySelected = { selectedCategory = it},
-                borderColor = Color(0xFFFF6B5B)
+                borderColor = AppColors.ExpenseRed
             )
 
             FilteredTransactionList(

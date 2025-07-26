@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.devsant.fintrack.ui.theme.AppColors
 
 
 @Composable
@@ -108,7 +109,7 @@ fun SearchBar(
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .size(24.dp),
-                tint = Color(0xFF56B25C)
+                tint = AppColors.IncomeGreen
             )
         }
     }

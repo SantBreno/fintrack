@@ -2,6 +2,8 @@ package com.devsant.fintrack.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +50,8 @@ import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.CurvedTopBackground
 import com.devsant.fintrack.ui.components.FilteredTransactionList
+import com.devsant.fintrack.ui.components.FloatingNavBar
+import com.devsant.fintrack.ui.theme.AppColors
 import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
 import kotlinx.coroutines.launch
@@ -101,7 +105,7 @@ fun HomeScreenContent(
                     Text("FinTrack", color = Color.White, fontWeight = FontWeight.Bold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1B213F)
+                    containerColor = AppColors.Primary
                 )
             )
         },
@@ -115,6 +119,14 @@ fun HomeScreenContent(
                     contentDescription = "Add Transaction",
                     modifier = Modifier.size(50.dp)
                 )
+            }
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                FloatingNavBar(navController = navController)
             }
         }
     ) { innerPadding ->
@@ -132,7 +144,7 @@ fun HomeScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
-                    color = Color(0xFF1B213F)
+                    color = AppColors.Primary
                 )
 
                 Card(
@@ -143,8 +155,8 @@ fun HomeScreenContent(
                         .height(100.dp),
                     shape = RoundedCornerShape(15.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF003D5F)),
-                    border = BorderStroke(3.dp, color = Color(0XFFE83A44))
+                    colors = CardDefaults.cardColors(containerColor = AppColors.Secondary),
+                    border = BorderStroke(3.dp, color = AppColors.Accent)
                 ) {
                     Column(modifier = Modifier
                         .fillMaxSize()
@@ -166,7 +178,7 @@ fun HomeScreenContent(
             }
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 24.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -212,26 +224,54 @@ fun HomeScreenContent(
 
 
 @Composable
-fun StatCard(title: String, modifier: Modifier = Modifier,navController: NavHostController, type: String) {
-    Card(
-        modifier = modifier
-            .clickable { navController.navigate(type) }
-            .height(40.dp),
-        shape = RoundedCornerShape(25.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF003D5F)),
-        border = BorderStroke(3.dp, color = Color(0XFFEE7779))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+fun StatCard(
+    title: String,
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    type: String,
+    ){
+        Card(
+            modifier = modifier
+                .clickable { navController.navigate(type) }
+                .height(40.dp),
+            shape = RoundedCornerShape(25.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = AppColors.Primary),
+            border = BorderStroke(3.dp, color = AppColors.Accent)
         ) {
-            Text(title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+                    .weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Text(title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold), color = Color.White)
+
+                Box(
+                    modifier = Modifier
+                        .border(2.dp, color = Color.Transparent, shape = CircleShape)
+                        .size(24.dp)
+                        .background(
+                            color =  AppColors.Secondary,
+                            shape = CircleShape,
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(
+                            id = if (type == "incomeDetailScreen") R.drawable.income_icon else R.drawable.expense_icon
+                        ),
+                        contentDescription =
+                            if (type == "incomeDetailScreen") "Income" else "Expense",
+                        modifier = Modifier.size(10.dp).fillMaxSize()
+                    )
+
+                }
+            }
+
         }
-    }
 }
 
 @Preview(showBackground = true)
