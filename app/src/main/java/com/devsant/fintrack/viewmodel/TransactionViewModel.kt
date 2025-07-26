@@ -1,15 +1,20 @@
 package com.devsant.fintrack.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.devsant.fintrack.data.AppDatabase
 import com.devsant.fintrack.model.Transaction
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-open class TransactionViewModel : ViewModel() {
-    var transactionList = mutableStateListOf<Transaction>()
-        private set
-
-    private var nextId = 1
+class TransactionViewModel(private val database: AppDatabase) : ViewModel() {
+    private val _transactionList = MutableStateFlow<List<Transaction>>(emptyList())
+    val transactionList = _transactionList.asStateFlow()
 
     var title = mutableStateOf("")
     var date = mutableStateOf("")
@@ -17,20 +22,31 @@ open class TransactionViewModel : ViewModel() {
     var category = mutableStateOf("")
     var type = mutableStateOf("")
 
-    private fun parseAmount(): Double {
-        return amount.value.toDoubleOrNull() ?: 0.0
+    init {
+        viewModelScope.launch {
+            database.transactionDao().getAllTransactions().collect { transactions ->
+                _transactionList.value = transactions
+            }
+        }
     }
 
     fun addTransaction() {
-        val transaction = Transaction(
-            id = nextId++,
-            title = title.value,
-            date = date.value,
-            amount = parseAmount(),
-            category = category.value,
-            type = type.value
-        )
-        transactionList.add(transaction)
+        viewModelScope.launch {
+            val transaction = Transaction(
+                title = title.value,
+                date = date.value,
+                amount = amount.value.toDoubleOrNull() ?: 0.0,
+                category = category.value,
+                type = type.value
+            )
+            database.transactionDao().insertTransaction(transaction)
+            // Reset fields after adding
+            title.value = ""
+            date.value = ""
+            amount.value = ""
+            category.value = ""
+            type.value = ""
+        }
     }
 
     fun updateTransaction(
@@ -41,40 +57,54 @@ open class TransactionViewModel : ViewModel() {
         category: String,
         type: String
     ) {
-        val index = transactionList.indexOfFirst { it.id == id }
-        if (index != -1) {
-            transactionList[index] = transactionList[index].copy(
-                title = title,
-                date = date,
-                amount = amount,
-                category = category,
-                type = type
-            )
+        viewModelScope.launch {
+            try {
+                val updatedTransaction = Transaction(
+                    id = id,
+                    title = title,
+                    date = date,
+                    amount = amount,
+                    category = category,
+                    type = type
+                )
+
+                database.transactionDao().updateTransaction(updatedTransaction)
+
+                withContext(Dispatchers.Main) {
+                    this@TransactionViewModel.title.value = ""
+                    this@TransactionViewModel.date.value = ""
+                    this@TransactionViewModel.amount.value = ""
+                    this@TransactionViewModel.category.value = ""
+                    this@TransactionViewModel.type.value = ""
+                }
+            } catch (e: Exception) {
+                Log.e("TransactionViewModel", "Error updating transaction", e)
+            }
         }
     }
 
     fun deleteTransaction(id: Int) {
-        val index = transactionList.indexOfFirst { it.id == id }
-        if (index != -1) {
-            transactionList.removeAt(index)
+        viewModelScope.launch {
+            val transaction = _transactionList.value.find { it.id == id }
+            transaction?.let {
+                database.transactionDao().deleteTransaction(it)
+            }
         }
     }
 
-    open fun getTransactionById(id: Int): Transaction? {
-        return transactionList.find { it.id == id }
+    suspend fun getTransactionById(id: Int): Transaction? {
+        return database.transactionDao().getTransactionById(id)
     }
 
-    open fun totalIncome(): Double {
-        return transactionList.filter { it.type.equals("Income", ignoreCase = true) }
-            .sumOf { it.amount }
+    suspend fun totalIncome(): Double {
+        return database.transactionDao().getTotalIncome()
     }
 
-    open fun totalExpense(): Double {
-        return transactionList.filter { it.type.equals("Expense", ignoreCase = true) }
-            .sumOf { it.amount }
+    suspend fun totalExpense(): Double {
+        return database.transactionDao().getTotalExpense()
     }
 
-    open fun totalBalance(): Double {
+    suspend fun totalBalance(): Double {
         return totalIncome() - totalExpense()
     }
 }
