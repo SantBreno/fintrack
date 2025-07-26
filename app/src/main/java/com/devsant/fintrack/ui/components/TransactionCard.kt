@@ -21,10 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.theme.AppColors
+import com.devsant.fintrack.ui.theme.FintrackTheme
 
 @Composable
 fun TransactionCard(
@@ -70,18 +73,54 @@ fun TransactionCard(
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    text = transaction.date,
+                    text = transaction.category,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
             }
 
-            Text(
-                text = (if (transaction.type == "Expense") "- " else "+ ") + "R$ ${transaction.amount}",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = if (transaction.type == "Expense") AppColors.ExpenseRed else AppColors.IncomeGreen
-            )
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = (if (transaction.type == "Expense") "- " else "+ ") + "R$ ${transaction.amount}",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    color = if (transaction.type == "Expense") AppColors.ExpenseRed else AppColors.IncomeGreen
+                )
+
+                Text(
+                    text = transaction.date,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+
+            }
+
+
         }
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TransactionCardPreview() {
+    val sampleTransaction = Transaction(
+        id = 1,
+        title = "Grocery Shopping",
+        amount = 125.50,
+        date = "2023-05-15",
+        type = "Expense",
+        category = "Food"
+    )
+
+    val navController = rememberNavController()
+
+    FintrackTheme {
+        TransactionCard(
+            transaction = sampleTransaction,
+            navController = navController
+        )
     }
 }
