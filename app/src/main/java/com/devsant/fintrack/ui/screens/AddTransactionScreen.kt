@@ -46,6 +46,7 @@ import androidx.room.Room
 import com.devsant.fintrack.data.AppDatabase
 import com.devsant.fintrack.ui.components.DateInputField
 import com.devsant.fintrack.ui.components.DatePickerField
+import com.devsant.fintrack.ui.components.FloatingNavBar
 import com.devsant.fintrack.ui.theme.AppColors
 import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
@@ -75,6 +76,14 @@ fun AddTransactionScreen(
                     containerColor = AppColors.Primary
                 )
             )
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                FloatingNavBar(navController = navController)
+            }
         }
     ) { innerPadding ->
         Column(
