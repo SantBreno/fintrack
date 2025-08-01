@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -108,18 +107,6 @@ fun HomeScreenContent(
                     containerColor = AppColors.Primary
                 )
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddClick,
-                shape = CircleShape,
-                containerColor = Color.White){
-                Image(
-                    painter = painterResource(id = R.drawable.add_icon),
-                    contentDescription = "Add Transaction",
-                    modifier = Modifier.size(50.dp)
-                )
-            }
         },
         bottomBar = {
             Box(

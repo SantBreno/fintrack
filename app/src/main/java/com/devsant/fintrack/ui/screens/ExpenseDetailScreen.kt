@@ -39,6 +39,7 @@ import com.devsant.fintrack.model.Transaction
 import com.devsant.fintrack.ui.components.CategorySelector
 import com.devsant.fintrack.ui.components.CurvedTopBackground
 import com.devsant.fintrack.ui.components.FilteredTransactionList
+import com.devsant.fintrack.ui.components.FloatingNavBar
 import com.devsant.fintrack.ui.theme.AppColors
 import com.devsant.fintrack.ui.theme.FintrackTheme
 import com.devsant.fintrack.viewmodel.TransactionViewModel
@@ -96,6 +97,14 @@ fun ExpenseScreenContent(
                     containerColor = AppColors.ExpenseRed
                 )
             )
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                FloatingNavBar(navController = navController)
+            }
         }
     ) { innerPadding ->
         Column(
