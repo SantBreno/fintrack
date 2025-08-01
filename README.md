@@ -17,9 +17,9 @@ Aplicativo mobile para controle financeiro pessoal com registro de receitas/desp
 
 ## 📸 Screenshots
 
-| Home Screen | Add Transaction | Details |
-|-------------|-----------------|---------|
-| <img src="screenshots/home.jpg" width="200"> | <img src="screenshots/add.jpg" width="200"> | <img src="screenshots/details.jpg" width="200"> |
+| Home | Add Transaction | Details | Income | Expenses |
+|------|-----------------|---------|--------|----------|
+| [![Home](https://github.com/SantBreno/fintrack/blob/master/screenshots/HomeScreen.png?raw=true)](https://github.com/SantBreno/fintrack/blob/master/screenshots/HomeScreen.png) | [![Add](https://github.com/SantBreno/fintrack/blob/master/screenshots/AddScreen.png?raw=true)](https://github.com/SantBreno/fintrack/blob/master/screenshots/AddScreen.png) | [![Details](https://github.com/SantBreno/fintrack/blob/master/screenshots/DetailScreen.png?raw=true)](https://github.com/SantBreno/fintrack/blob/master/screenshots/DetailScreen.png) | [![Income](https://github.com/SantBreno/fintrack/blob/master/screenshots/IncomeScreen.png?raw=true)](https://github.com/SantBreno/fintrack/blob/master/screenshots/IncomeScreen.png) | [![Expenses](https://github.com/SantBreno/fintrack/blob/master/screenshots/ExpenseScreen.png?raw=true)](https://github.com/SantBreno/fintrack/blob/master/screenshots/ExpenseScreen.png) |
 
 ## 🛠 Tecnologias
 
